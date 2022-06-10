@@ -1,13 +1,9 @@
 #!/bin/bash
 
-auquatoneThreads=5
-subdomainThreads=10
-dirsearchThreads=50
-dirsearchWordlist=/home/mohsen/hard/Pentest/Wordlist/directory/dir.txt
+dirsearchWordlist=~/tools/SecLists/Discovery/Web-Content/dirsearch.txt
 massdnsWordlist=~/tools/SecLists/Discovery/DNS/clean-jhaddix-dns.txt
-chromiumPath=/snap/bin/chromium
-EyeWitness=~/tools/eyewitness/Python/EyeWitness.py
-feroxbuster=/home/mohsen/feroxbuster
+EyeWitness=~/tools/EyeWitness/Python/EyeWitness.py
+feroxbuster=~/tools/feroxbuster
 
 red=`tput setaf 1`
 green=`tput setaf 2`
@@ -46,12 +42,6 @@ shift $((OPTIND - 1))
 if [ -z "${domain}" ] && [[ -z ${subreport[@]} ]]; then
    usage; exit 1;
 fi
-
-
-
-
-
-
 
 
 
@@ -170,11 +160,6 @@ searchcrtsh(){
 # mass(){
 #  ~/tools/massdns/scripts/subbrute.py $massdnsWordlist $domain | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S | grep -v 142.54.173.92 > ./$domain/$foldername/mass.txt
 # }
-
-
-
-
-
 
 
 
