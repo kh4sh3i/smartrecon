@@ -1,7 +1,7 @@
 # smartrecon
 smartrecon is a script written in Bash, it is intended to automate some tedious tasks of reconnaissance and information gathering
 
-# Usage
+## Usage
 ```
 ./smartrecon.sh -d domain.com
 ```
@@ -18,3 +18,11 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 * Perform naabu on specific ports
 * Perform dirsearch for all subdomains
 * Generate a HTML report with output from the tools above
+
+
+## System Requirements
+* Recommended to run on vps with 1VCPU and 2GB ram.
+
+### Thanks
+* [nahamsec - Ben Sadeghipour](https://github.com/nahamsec)
+* [Tom Hudson - Tomonomnom](https://github.com/tomnomnom)
