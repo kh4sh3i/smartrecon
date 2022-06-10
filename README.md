@@ -30,7 +30,20 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 * ./install.sh
 
 ## Tools
-subfinder
+*  subfinder
+*  dnsgen
+*  shuffledns
+*  Massdns
+*  Httprobe
+*  EyeWitness
+*  Waybackurls
+*  httpx
+*  gf
+*  interestingEXT
+*  feroxbuster
+*  sqlmap-dev
+*  Unfurl
+*  Seclists collection
 
 
 
