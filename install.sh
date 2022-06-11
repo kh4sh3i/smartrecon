@@ -31,8 +31,8 @@ select choice in "${choices[@]}"; do
                 yes)
 
 					echo "Installing Golang"
-					wget https://dl.google.com/go/go1.17.linux-amd64.tar.gz
-					sudo tar -xvf go1.17.linux-amd64.tar.gz
+					wget https://dl.google.com/go/go1.17.11.linux-amd64.tar.gz
+					sudo tar -xvf go1.17.11.linux-amd64.tar.gz
 					sudo mv go /usr/local
 					export GOROOT=/usr/local/go
 					export GOPATH=$HOME/go
@@ -99,7 +99,7 @@ echo "done"
 echo "installing EyeWitness"
 git clone https://github.com/FortyNorthSecurity/EyeWitness.git
 cd EyeWitness/Python/setup/
-./setup.sh
+sudo ./setup.sh
 cd ~/tools/
 echo "done"
 
@@ -134,9 +134,9 @@ echo "installing Gf-Patterns"
 # echo 'source $GOPATH/pkg/mod/github.com/tomnomnom/gf*/gf-completion.bash' >> ~/.bashrc
 # source ~/.bashrc 
 mkdir .gf
-cp -r $GOPATH/pkg/mod/github.com/tomnomnom/gf*/examples/ ~/.gf
+sudo cp -r $GOPATH/pkg/mod/github.com/tomnomnom/gf*/examples/ ~/.gf
 git clone https://github.com/1ndianl33t/Gf-Patterns
-mv ~/tools/Gf-Patterns/*.json ~/.gf
+sudo mv ~/tools/Gf-Patterns/*.json ~/.gf
 echo "done"
 
 
