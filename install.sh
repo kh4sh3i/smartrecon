@@ -131,15 +131,13 @@ echo "done"
 
 
 echo "installing Gf-Patterns"
-echo 'source $GOPATH/src/github.com/tomnomnom/gf/gf-completion.bash' >> ~/.bashrc
-source ~/.bashrc 
+# echo 'source $GOPATH/pkg/mod/github.com/tomnomnom/gf*/gf-completion.bash' >> ~/.bashrc
+# source ~/.bashrc 
 mkdir .gf
-cp -r $GOPATH/src/github.com/tomnomnom/gf/examples ~/.gf
+cp -r $GOPATH/pkg/mod/github.com/tomnomnom/gf*/examples/ ~/.gf
 git clone https://github.com/1ndianl33t/Gf-Patterns
-mv ~/Gf-Patterns/*.json ~/.gf
+mv ~/tools/Gf-Patterns/*.json ~/.gf
 echo "done"
-
-
 
 
 echo "installing sqlmap"
