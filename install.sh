@@ -66,7 +66,7 @@ echo "done"
 
 
 echo "installing dnsgen"
-sudo pip install urllib3==1.23 sudo pip install requests
+# sudo pip install urllib3==1.23 sudo pip install requests
 git clone https://github.com/ProjectAnte/dnsgen
 cd dnsgen
 pip3 install -r requirements.txt
@@ -166,6 +166,8 @@ cat dns-Jhaddix.txt | head -n -14 > clean-jhaddix-dns.txt
 cd ~/tools/
 echo "done"
 
+
+sudo pip install urllib3==1.23 sudo pip install requests
 
 
 echo -e "\n\n\n\n\n\n\n\n\n\n\nDone! All tools are set up in ~/tools"
