@@ -66,6 +66,7 @@ echo "done"
 
 
 echo "installing dnsgen"
+sudo pip install urllib3==1.23 sudo pip install requests
 git clone https://github.com/ProjectAnte/dnsgen
 cd dnsgen
 pip3 install -r requirements.txt
