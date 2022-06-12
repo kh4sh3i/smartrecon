@@ -41,6 +41,7 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 *  gf
 *  interestingEXT
 *  feroxbuster
+*  naabu
 *  sqlmap-dev
 *  Unfurl
 *  Seclists collection
