@@ -146,8 +146,9 @@ cd ~/tools/
 echo "done"
 
 
-echo "installing nmap"
-sudo apt-get install -y nmap
+echo "installing naabu"
+sudo apt install -y libpcap-dev
+go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 echo "done"
 
 echo "installing unfurl"
