@@ -429,10 +429,10 @@ master_report()
     <tbody>' >> ./$domain/$foldername/master_report.html
 
 
-    cat ./$domain/$foldername/urllist.txt |  sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g'  | while read nline; do
+    cat ./$domain/$foldername/urllist.txt | while read nline; do
     # diresults=$(ls ~/tools/dirsearch/reports/$nline/ | grep -v old)
     echo "<tr>
-    <td><a href='./reports/$nline.html'>$nline</a></td>
+    <td><a href='$nline'>"$nline |  sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g'"</a></td>
     <td></td>
     </tr>" >> ./$domain/$foldername/master_report.html
     done
