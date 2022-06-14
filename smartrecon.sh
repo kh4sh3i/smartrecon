@@ -5,6 +5,7 @@ massdnsWordlist=~/tools/SecLists/Discovery/DNS/clean-jhaddix-dns.txt
 EyeWitness=~/tools/EyeWitness/Python/EyeWitness.py
 feroxbuster=~/tools/feroxbuster
 
+
 red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -48,18 +49,11 @@ fi
 # 1) first step of recon
 recon(){
 
-  # echo "${green}Recon started on $domain ${reset}"
-  # echo "Listing subdomains using sublister..."
-  # python ~/tools/Sublist3r/sublist3r.py -d $domain -t 10 -v -o ./$domain/$foldername/$domain.txt > /dev/null
-  # echo "Checking certspotter..."
-  # curl -s https://certspotter.com/api/v0/certs\?domain\=$domain | jq '.[].dns_names[]' | sed 's/\"//g' | sed 's/\*\.//g' | sort -u | grep $domain >> ./$domain/$foldername/$domain.txt
-
-
   # echo -e "${green}1.Listing subdomains using crobat...${reset}"
   # dataset=`crobat -s $domain > ./$domain/$foldername/$domain.txt`
 
   echo -e "${green}2.Listing subdomains using subfinder...${reset}"
-  subfinder -silent  -d $domain >> ./$domain/$foldername/$domain.txt 
+  subfinder -silent  -d $domain -all | sort -u >> ./$domain/$foldername/$domain.txt 
 
   # echo -e "${green}3.Listing subdomains using assetfinder...${reset}"
   # assetfinder=` assetfinder -subs-only $domain >> ./$domain/$foldername/$domain.txt`
@@ -68,9 +62,36 @@ recon(){
   # gau=`gau -subs $domain | cut -d / -f3 >> ./$domain/$foldername/$domain.txt`
 
 
+#  echo -e "4.Brute force main domain to find subdomain using subbrute..."
+#  subbrute=`./scripts/subbrute.py lists/names.txt $domain >> domains.txt`
+
+#  echo -e "4.1.Brute force all subdomain to find subdomain using subbrute..."
+#  subbrute=`./scripts/subbrute.py lists/names.txt -t domains.txt`
+
+#  echo -e "4.2.Subdomain permutation using dnsgen..."
+#  dnsgen=`sort -u domains.txt > temp.txt | cat temp.txt | dnsgen - > domains.txt`
+
+#  echo -e "5.excloude out of scope subdomain with hgnored.txt ..."
+#  grep=`grep -vf ignored.txt domains.txt > temp.txt`
+#  change=`mv temp.txt domains.txt`
+
+#  echo -e "5.1.vertical discovery subdomains with amass..."
+#  amass=`amass enum -d $domain -ip -src`
+
+#  echo -e "5.2.horizantal discovery subdomains with amass..."
+#  amass2=`amass intel -d $domain -whois`
+
+#  echo -e "5.3.get new subdomains with amass track..."
+#  amass3=`amass track -d $domain`
+
+
+
+
+
+
   nsrecords $domain
   # excludedomains
-  echo "Starting discovery..."
+  echo "${yellow}Starting discovery... ${reset}"
   discovery $domain
   # cat ./$domain/$foldername/$domain.txt | sort -u > ./$domain/$foldername/$domain.txt
 
@@ -100,16 +121,14 @@ shuffle_dns(){
 
 
 nsrecords(){
-  echo "Checking http://crt.sh"
+  echo "${green}Checking http://crt.sh ${reset}"
   searchcrtsh $domain
   # echo "Starting Massdns Subdomain discovery this may take a while"
   # mass $domain > /dev/null
   # echo "Massdns finished..."
 
-  echo "${green}Started shuffledns with dnsgen...${reset}"
+  echo "${green}Started shuffledns with Subdomain permutation using dnsgen...${reset}"
   shuffle_dns $domain
-
-
 
 
   echo "${green}Started dns records check...${reset}"
@@ -166,10 +185,7 @@ searchcrtsh(){
 
 discovery(){
 	hostalive $domain
-	# cleandirsearch $domain
-	# aqua $domain
   eyewitness $domain
-	# cleanup $domain
 	# waybackrecon $domain
   interesting $domain
 	dirsearcher
@@ -186,13 +202,6 @@ hostalive(){
   echo  "${yellow}Total of $(wc -l ./$domain/$foldername/urllist.txt | awk '{print $1}') live subdomains were found${reset}"
 }
 
-# cleandirsearch(){
-# 	cat ./$domain/$foldername/urllist.txt | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g' | sort -u | while read line; do
-#   [ -d ~/tools/dirsearch/reports/$line/ ] && ls ~/tools/dirsearch/reports/$line/ | grep -v old | while read i; do
-#   mv ~/tools/dirsearch/reports/$line/$i ~/tools/dirsearch/reports/$line/$i.old
-#   done
-#   done
-# }
 
 eyewitness(){
   echo "${green}starting eyewitness scan...${reset}"
@@ -201,12 +210,6 @@ eyewitness(){
 }
 
 
-cleanup(){
-  cd ./$domain/$foldername/screenshots/
-  rename 's/_/-/g' -- *
-
-  cd $path
-}
 
 # waybackrecon () {
 # echo "Scraping wayback for data..."
@@ -230,15 +233,19 @@ cleanup(){
 
 interesting(){
 #	mkdir interesting.txt
-	echo -e "${yellow}find interesting data in site...${reset}"
+	echo -e "${green}find interesting data in site...${reset}"
 	cat ./$domain/$foldername/urllist.txt | waybackurls | gf interestingEXT | grep -viE '(\.(js|css|pdf|svg|png|jpg|woff))' | sort -u | httpx -status-code -mc 200 -silent | awk '{ print $1}' > ./$domain/$foldername/wayback-data/interesting.txt
 }
 
 dirsearcher(){
-  echo -e "${yellow}Starting dirsearch...${reset}"
+  echo -e "${green}Starting directory search with FFUF...${reset}"
   # cat ./$domain/$foldername/urllist.txt | xargs -P$subdomainThreads -I % sh -c "python3 ~/tools/dirsearch/dirsearch.py -e php,asp,aspx,jsp,html,zip,jar -w $dirsearchWordlist -t $dirsearchThreads -u % | grep Target && tput sgr0 && ./smartrecon.sh -r $domain -r $foldername -r %"
 # ./feroxbuster -u https://jetamooz.com -w /home/mohsen/hard/Pentest/Wordlist/directory/raft-medium-words.txt -s 200 -n -o jetamooz_dir.txt
-  cat ./$domain/$foldername/urllist.txt | $feroxbuster --stdin --silent -s 200 -n -w $dirsearchWordlist -o ./$domain/$foldername/directory.txt
+  # cat ./$domain/$foldername/urllist.txt | $feroxbuster --stdin --silent -s 200 -n -w $dirsearchWordlist -o ./$domain/$foldername/directory.txt
+  
+  for sub in $(cat ./$domain/$foldername/urllist.txt);
+    do  ffuf -w $dirsearchWordlist -u $sub/FUZZ  -ac -mc 200 -s -sf  | tee ./$domain/$foldername/reports/$sub.txt;
+  done;
 }
 
 
@@ -248,7 +255,7 @@ dirsearcher(){
 
 report(){
     subdomain=$(echo $subd | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g')
-    echo "${yellow}	[+] Generating report for $subdomain"
+    echo "${green}	[+] Generating report for $subdomain"
 
     # cat ./$domain/$foldername/aqua_out/aquatone_session.json | jq --arg v "$subd" -r '.pages[$v].headers[] | keys[] as $k | "\($k), \(.[$k])"' | grep -v "decreasesSecurity\|increasesSecurity" >> ./$domain/$foldername/aqua_out/parsedjson/$subdomain.headers
     dirsearchfile=$(ls ~/tools/dirsearch/reports/$subdomain/ | grep -v old)
