@@ -239,14 +239,13 @@ interesting(){
 
 dirsearcher(){
   echo -e "${green}Starting directory search with FFUF...${reset}"
-  # cat ./$domain/$foldername/urllist.txt | xargs -P$subdomainThreads -I % sh -c "python3 ~/tools/dirsearch/dirsearch.py -e php,asp,aspx,jsp,html,zip,jar -w $dirsearchWordlist -t $dirsearchThreads -u % | grep Target && tput sgr0 && ./smartrecon.sh -r $domain -r $foldername -r %"
-# ./feroxbuster -u https://jetamooz.com -w /home/mohsen/hard/Pentest/Wordlist/directory/raft-medium-words.txt -s 200 -n -o jetamooz_dir.txt
   # cat ./$domain/$foldername/urllist.txt | $feroxbuster --stdin --silent -s 200 -n -w $dirsearchWordlist -o ./$domain/$foldername/directory.txt
   
   for sub in $(cat ./$domain/$foldername/urllist.txt);
     do  
-    dir= cat $sub | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g' 
-    ffuf -w $dirsearchWordlist -u $sub/FUZZ  -ac -mc 200 -s -sf  | tee ./$domain/$foldername/reports/$dir.txt;
+    echo "${yellow} $sub ${reset}"
+    dir= echo  "$sub" | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g' 
+    ffuf -w $dirsearchWordlist -u $sub/FUZZ  -ac -mc 200 -s -sf  | tee ./$domain/$foldername/reports/$(echo  "$sub" | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g').txt;
   done;
 }
 
@@ -442,7 +441,7 @@ master_report()
     # diresults=$(ls ~/tools/dirsearch/reports/$nline/ | grep -v old)
     echo "<tr>
     <td><a href='$nline'>$nline</a></td>
-    <td></td>
+    <td><a href='./$domain/$foldername/reports/$nline.txt'>$(wc -l ./$domain/$foldername/reports/$nline.txt)</a></td>
     </tr>" >> ./$domain/$foldername/master_report.html
     done
     echo "</tbody></table>
@@ -452,18 +451,14 @@ master_report()
 
     echo "</pre><div><h2>Wayback data</h2></div>" >> ./$domain/$foldername/master_report.html
     echo "<table><tbody>" >> ./$domain/$foldername/master_report.html
-    # [ -s ./$domain/$foldername/wayback-data/paramlist.txt ] && echo "<tr><td><a href='./wayback-data/paramlist.txt'>Params wordlist</a></td></tr>" >> ./$domain/$foldername/master_report.html
-    # [ -s ./$domain/$foldername/wayback-data/jsurls.txt ] && echo "<tr><td><a href='./wayback-data/jsurls.txt'>Javscript files</a></td></tr>" >> ./$domain/$foldername/master_report.html
-    # [ -s ./$domain/$foldername/wayback-data/phpurls.txt ] && echo "<tr><td><a href='./wayback-data/phpurls.txt'>PHP Urls</a></td></tr>" >> ./$domain/$foldername/master_report.html
-    # [ -s ./$domain/$foldername/wayback-data/aspxurls.txt ] && echo "<tr><td><a href='./wayback-data/aspxurls.txt'>ASP Urls</a></td></tr>" >> ./$domain/$foldername/master_report.html
     [ -s ./$domain/$foldername/wayback-data/interesting.txt ] && echo "<tr><td><a href='./wayback-data/interesting.txt'>interestingEXT Urls</a></td></tr>" >> ./$domain/$foldername/master_report.html
     echo "</tbody></table></div>" >> ./$domain/$foldername/master_report.html
 
 
-    echo "<div><h2>directory search</h2></div>" >> ./$domain/$foldername/master_report.html
-    echo "<table><tbody>" >> ./$domain/$foldername/master_report.html
-     [ -s ./$domain/$foldername/directory.txt ] && echo "<tr><td><a href='./directory.txt'>interesting directory</a></td></tr>" >> ./$domain/$foldername/master_report.html
-    echo "</tbody></table></div>" >> ./$domain/$foldername/master_report.html
+    # echo "<div><h2>directory search</h2></div>" >> ./$domain/$foldername/master_report.html
+    # echo "<table><tbody>" >> ./$domain/$foldername/master_report.html
+    #  [ -s ./$domain/$foldername/directory.txt ] && echo "<tr><td><a href='./directory.txt'>interesting directory</a></td></tr>" >> ./$domain/$foldername/master_report.html
+    # echo "</tbody></table></div>" >> ./$domain/$foldername/master_report.html
 
 
 
@@ -528,7 +523,7 @@ fi
   logo
   if [ -d "./$domain" ]
   then
-    echo "This is a known target."
+    echo "${red}This is a known target.${reset}"
   else
     mkdir ./$domain
   fi
