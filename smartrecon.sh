@@ -244,7 +244,9 @@ dirsearcher(){
   # cat ./$domain/$foldername/urllist.txt | $feroxbuster --stdin --silent -s 200 -n -w $dirsearchWordlist -o ./$domain/$foldername/directory.txt
   
   for sub in $(cat ./$domain/$foldername/urllist.txt);
-    do  ffuf -w $dirsearchWordlist -u $sub/FUZZ  -ac -mc 200 -s -sf  | tee ./$domain/$foldername/reports/$sub.txt;
+    do  
+    dir= cat $sub | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g' 
+    ffuf -w $dirsearchWordlist -u $sub/FUZZ  -ac -mc 200 -s -sf  | tee ./$domain/$foldername/reports/$dir.txt;
   done;
 }
 
