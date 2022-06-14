@@ -244,7 +244,6 @@ dirsearcher(){
   for sub in $(cat ./$domain/$foldername/urllist.txt);
     do  
     echo "${yellow} $sub ${reset}"
-    dir= echo  "$sub" | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g' 
     ffuf -w $dirsearchWordlist -u $sub/FUZZ  -ac -mc 200 -s -sf  | tee ./$domain/$foldername/reports/$(echo  "$sub" | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g').txt;
   done;
 }
@@ -453,15 +452,6 @@ master_report()
     echo "<table><tbody>" >> ./$domain/$foldername/master_report.html
     [ -s ./$domain/$foldername/wayback-data/interesting.txt ] && echo "<tr><td><a href='./wayback-data/interesting.txt'>interestingEXT Urls</a></td></tr>" >> ./$domain/$foldername/master_report.html
     echo "</tbody></table></div>" >> ./$domain/$foldername/master_report.html
-
-
-    # echo "<div><h2>directory search</h2></div>" >> ./$domain/$foldername/master_report.html
-    # echo "<table><tbody>" >> ./$domain/$foldername/master_report.html
-    #  [ -s ./$domain/$foldername/directory.txt ] && echo "<tr><td><a href='./directory.txt'>interesting directory</a></td></tr>" >> ./$domain/$foldername/master_report.html
-    # echo "</tbody></table></div>" >> ./$domain/$foldername/master_report.html
-
-
-
 
 
 
