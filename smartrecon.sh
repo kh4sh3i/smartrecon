@@ -232,7 +232,6 @@ eyewitness(){
 
 
 interesting(){
-#	mkdir interesting.txt
 	echo -e "${green}find interesting data in site...${reset}"
 	cat ./$domain/$foldername/urllist.txt | waybackurls | gf interestingEXT | grep -viE '(\.(js|css|pdf|svg|png|jpg|woff))' | sort -u | httpx -status-code -mc 200 -silent | awk '{ print $1}' > ./$domain/$foldername/wayback-data/interesting.txt
 }
@@ -382,9 +381,7 @@ report(){
 
 master_report()
 {
-
-    #this code will generate the html report for target it will have an overview of the scan
-      echo '<html>
+   echo '<html>
     <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">' >> ./$domain/$foldername/master_report.html
     echo "<title>Recon Report for $domain</title>
@@ -440,7 +437,7 @@ master_report()
     # diresults=$(ls ~/tools/dirsearch/reports/$nline/ | grep -v old)
     echo "<tr>
     <td><a href='$nline'>$nline</a></td>
-    <td><a href='./$domain/$foldername/reports/$nline.txt'>$(wc -l ./$domain/$foldername/reports/$nline.txt)</a></td>
+    <td><a href='./reports/$nline.txt'>$(cat ./$domain/$foldername/reports/$nline.txt | wc -l)</a></td>
     </tr>" >> ./$domain/$foldername/master_report.html
     done
     echo "</tbody></table>
