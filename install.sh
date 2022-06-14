@@ -64,7 +64,6 @@ go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 echo "done"
 
 
-
 echo "installing dnsgen"
 # sudo pip install urllib3==1.23 sudo pip install requests
 git clone https://github.com/ProjectAnte/dnsgen
@@ -124,6 +123,12 @@ echo "done"
 echo "installing feroxbuster"
 curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/master/install-nix.sh | bash
 echo "done"
+
+
+echo "installing ffuf"
+go install -v github.com/ffuf/ffuf@latest
+echo "done"
+
 
 
 echo "installing gf"
