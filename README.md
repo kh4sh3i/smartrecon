@@ -24,10 +24,13 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 * Recommended to run on vps with 1VCPU and 2GB ram.
 
 ## Installation & Requirements
-* git clone https://github.com/kh4sh3i/smartrecon.git
-* cd smartrecon
-* chmod +x install.sh
-* ./install.sh
+```
+git clone https://github.com/kh4sh3i/smartrecon.git
+cd smartrecon
+chmod +x install.sh
+./install.sh
+```
+
 
 ## Tools
 *  subfinder
