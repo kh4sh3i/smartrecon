@@ -54,6 +54,9 @@ chmod +x install.sh
 *  Seclists collection
 
 
+### Tips
+for send notification you should config ($HOME/.config/notify/provider-config.yaml) with discord webhook ulr. read [Notification system for your Bug Bounty Automation](https://hakin9.org/notification-system-for-your-bug-bounty-automation-by-anubhav-singh/)
+
 
 ### Thanks
 * [nahamsec - Ben Sadeghipour](https://github.com/nahamsec)
