@@ -168,6 +168,10 @@ go install -v github.com/projectdiscovery/notify/cmd/notify@latest
 echo "done"
 
 
+echo "installing nuclei"
+go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+echo "done"
+
 
 echo "downloading Seclists"
 cd ~/tools/
