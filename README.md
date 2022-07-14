@@ -17,6 +17,8 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 * Extract wayback import data
 * Perform naabu on specific ports
 * Perform dirsearch for all subdomains
+* find exposure data with nuclei scanner
+* send notifiaction wthi notify tools to discord,telegram,...
 * Generate a HTML report with output from the tools above
 
 
@@ -47,6 +49,8 @@ chmod +x install.sh
 *  naabu
 *  sqlmap-dev
 *  Unfurl
+*  nuclei
+*  notify
 *  Seclists collection
 
 
