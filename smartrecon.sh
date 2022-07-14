@@ -250,8 +250,8 @@ dirsearcher(){
 
 
 vulnscanner(){
-  echo -e "${green}Starting exposure data with nuclei...${reset}"
-  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure -o nuclei_exposure.txt -silent; notify -bulk -data nuclei_exposure.txt -silent
+  echo -e "${green}Starting vuln scanner with nuclei...${reset}"
+  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,misconfig,unauth -o nuclei.txt -silent; notify -bulk -data nuclei.txt -silent
 }
 
 
@@ -455,7 +455,7 @@ master_report()
 
     echo "<div><h2>nuclei scanner</h2></div>
     <table><tbody>
-    <tr><td><a href='./nuclei_exposure.txt'>exposure data</a></td></tr>
+    <tr><td><a href='./nuclei.txt'>exposure,misconfig,unauth data</a></td></tr>
     </tbody></table></div>" >> ./$domain/$foldername/master_report.html
 
 
