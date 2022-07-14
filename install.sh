@@ -158,8 +158,15 @@ go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 echo "done"
 
 echo "installing unfurl"
-go get -u github.com/tomnomnom/unfurl 
+go install -v github.com/tomnomnom/unfurl@latest
 echo "done"
+
+
+
+echo "installing notify"
+go install -v github.com/projectdiscovery/notify/cmd/notify@latest
+echo "done"
+
 
 
 echo "downloading Seclists"
