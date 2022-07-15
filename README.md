@@ -35,7 +35,9 @@ chmod +x install.sh
 
 
 ## Tools
+*  SonarSearch
 *  subfinder
+*  assetfinder
 *  dnsgen
 *  shuffledns
 *  Massdns

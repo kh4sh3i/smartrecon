@@ -49,27 +49,19 @@ fi
 # 1) first step of recon
 recon(){
 
-  # echo -e "${green}1.Listing subdomains using crobat...${reset}"
-  # dataset=`crobat -s $domain > ./$domain/$foldername/$domain.txt`
+  # public dataset search in project sonar (A rapid API for the Project Sonar dataset)
+  echo -e "${green}1.Listing subdomains using crobat...${reset}"
+  crobat -s $domain > ./$domain/$foldername/$domain.txt
 
   echo -e "${green}2.Listing subdomains using subfinder...${reset}"
   subfinder -silent  -d $domain -all | sort -u >> ./$domain/$foldername/$domain.txt 
 
-  # echo -e "${green}3.Listing subdomains using assetfinder...${reset}"
-  # assetfinder=` assetfinder -subs-only $domain >> ./$domain/$foldername/$domain.txt`
+  echo -e "${green}3.Listing subdomains using assetfinder...${reset}"
+  assetfinder -subs-only $domain >> ./$domain/$foldername/$domain.txt
 
   # echo -e "${green}3.1.Listing subdomains using gau...${reset}"
   # gau=`gau -subs $domain | cut -d / -f3 >> ./$domain/$foldername/$domain.txt`
 
-
-#  echo -e "4.Brute force main domain to find subdomain using subbrute..."
-#  subbrute=`./scripts/subbrute.py lists/names.txt $domain >> domains.txt`
-
-#  echo -e "4.1.Brute force all subdomain to find subdomain using subbrute..."
-#  subbrute=`./scripts/subbrute.py lists/names.txt -t domains.txt`
-
-#  echo -e "4.2.Subdomain permutation using dnsgen..."
-#  dnsgen=`sort -u domains.txt > temp.txt | cat temp.txt | dnsgen - > domains.txt`
 
 #  echo -e "5.excloude out of scope subdomain with hgnored.txt ..."
 #  grep=`grep -vf ignored.txt domains.txt > temp.txt`
@@ -114,6 +106,7 @@ recon(){
 
 shuffle_dns(){
   cat ./$domain/$foldername/$domain.txt | dnsgen - | shuffledns -d $domain -silent -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
+  #  echo -e "4.1.Brute force all subdomain to find subdomain using shuffledns..."
   # shuffledns  -d $domain -silent -list ./$domain/$foldername/$domain.txt  -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
 }
 

@@ -58,10 +58,22 @@ fi
 mkdir ~/tools
 cd ~/tools/
 
-#install aquatone
-echo "Installing subfinder"
+
+echo "Installing crobat"
+go install -v github.com/cgboal/sonarsearch/cmd/crobat@latest
+echo "done"
+
+
+echo "Installing assetfinder"
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 echo "done"
+
+
+echo "Installing assetfinder"
+go install -v github.com/tomnomnom/assetfinder@latest
+echo "done"
+
+
 
 
 echo "installing dnsgen"
