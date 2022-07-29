@@ -185,6 +185,27 @@ go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 echo "done"
 
 
+
+echo "installing deduplicate"
+go install -v github.com/nytr0gen/deduplicate@latest
+echo "done"
+
+
+echo "installing dalfox"
+go install github.com/hahwul/dalfox/v2@latest
+echo "done"
+
+
+echo "installing ParamSpider"
+git clone https://github.com/devanshbatham/ParamSpider
+cd ParamSpider
+pip3 install -r requirements.txt
+cd ~/tools/
+echo "done"
+
+
+
+
 echo "downloading Seclists"
 cd ~/tools/
 git clone https://github.com/danielmiessler/SecLists.git

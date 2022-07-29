@@ -244,7 +244,22 @@ dirsearcher(){
 
 vulnscanner(){
   echo -e "${green}Starting vuln scanner with nuclei...${reset}"
-  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,misconfig,unauth -o nuclei.txt -silent; notify -bulk -data nuclei.txt -silent
+  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth -o nuclei.txt -silent; notify -bulk -data nuclei.txt -silent
+
+
+  # sql injection
+  # echo -e "${green}find sql injection with wayback ...${reset}"
+  # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
+
+
+  echo -e "${green}find Xss with paramspider ...${reset}"
+  python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg,jpeg,pdf | deduplicate --hide-useless --sort | sed '1,4d' | httpx -silent | dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
+  cat xss_raw_result.txt | cut -d ' ' -f2 | tee xss_result.txt
+  # cat test.txt | gf xss | sed ‘s/=.*/=/’ | sed ‘s/URL: //’ | tee testxss.txt ; dalfox file testxss.txt -b yours-xss-hunter-domain(e.g yours.xss.ht)
+
+
+
+
 }
 
 
@@ -446,9 +461,10 @@ master_report()
     echo "</tbody></table>" >> ./$domain/$foldername/master_report.html
 
 
-    echo "<div><h2>nuclei scanner</h2></div>
+    echo "<div><h2>vuln scanner</h2></div>
     <table><tbody>
-    <tr><td><a href='./nuclei.txt'>exposure,misconfig,unauth data</a></td></tr>
+    <tr><td><a href='./nuclei.txt'>nuclei scanner</a></td></tr>
+    <tr><td><a href='./xss_result.txt'>Xss vuln</a></td></tr>
     </tbody></table></div>" >> ./$domain/$foldername/master_report.html
 
 
