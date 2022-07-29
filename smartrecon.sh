@@ -4,6 +4,7 @@ dirsearchWordlist=~/tools/SecLists/Discovery/Web-Content/dirsearch.txt
 massdnsWordlist=~/tools/SecLists/Discovery/DNS/clean-jhaddix-dns.txt
 EyeWitness=~/tools/EyeWitness/Python/EyeWitness.py
 feroxbuster=~/tools/feroxbuster
+paramspider=~/tools/ParamSpider/paramspider.py
 
 
 red=`tput setaf 1`
@@ -226,7 +227,8 @@ eyewitness(){
 
 interesting(){
 	echo -e "${green}find interesting data in site...${reset}"
-	cat ./$domain/$foldername/urllist.txt | waybackurls | gf interestingEXT | grep -viE '(\.(js|css|pdf|svg|png|jpg|woff))' | sort -u | httpx -status-code -mc 200 -silent | awk '{ print $1}' > ./$domain/$foldername/wayback-data/interesting.txt
+	cat ./$domain/$foldername/urllist.txt | waybackurls | qsreplace  -a | tee ./$domain/$foldername/waybackurls.txt
+  cat ./$domain/$foldername/waybackurls.txt | gf interestingEXT | grep -viE '(\.(js|css|pdf|svg|png|jpg|woff))' | sort -u | httpx -status-code -mc 200 -silent | awk '{ print $1}' > ./$domain/$foldername/wayback-data/interesting.txt
 }
 
 dirsearcher(){
@@ -244,7 +246,7 @@ dirsearcher(){
 
 vulnscanner(){
   echo -e "${green}Starting vuln scanner with nuclei...${reset}"
-  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth -o nuclei.txt -silent; notify -bulk -data nuclei.txt -silent
+  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
 
 
   # sql injection
@@ -252,13 +254,15 @@ vulnscanner(){
   # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
 
 
-  echo -e "${green}find Xss with paramspider ...${reset}"
-  python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg,jpeg,pdf | deduplicate --hide-useless --sort | sed '1,4d' | httpx -silent | dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
-  cat xss_raw_result.txt | cut -d ' ' -f2 | tee xss_result.txt
+  echo -e "${green}find Xss vulnerability ...${reset}"
+  python3 $paramspider -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg,jpeg,pdf | qsreplace  -a | sed '1,4d' | httpx -silent | dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
+  cat ./$domain/$foldername/xss_raw_result.txt | cut -d ' ' -f2 | tee ./$domain/$foldername/xss_result.txt; notify -bulk -data ./$domain/$foldername/xss_result.txt -silent
   # cat test.txt | gf xss | sed ‘s/=.*/=/’ | sed ‘s/URL: //’ | tee testxss.txt ; dalfox file testxss.txt -b yours-xss-hunter-domain(e.g yours.xss.ht)
 
 
 
+  # echo -e "${green}find open redirect vulnerability ...${reset}"
+  # cat ./$domain/$foldername/waybackurls.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
 
 }
 

@@ -204,6 +204,12 @@ cd ~/tools/
 echo "done"
 
 
+echo "installing qsreplace"
+go install github.com/tomnomnom/qsreplace@latest
+echo "done"
+
+
+
 
 
 echo "downloading Seclists"
