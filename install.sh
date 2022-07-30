@@ -209,7 +209,9 @@ go install github.com/tomnomnom/qsreplace@latest
 echo "done"
 
 
-
+echo "installing interactsh"
+go install -v github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+echo "done"
 
 
 echo "downloading Seclists"

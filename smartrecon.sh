@@ -264,6 +264,29 @@ vulnscanner(){
   # echo -e "${green}find open redirect vulnerability ...${reset}"
   # cat ./$domain/$foldername/waybackurls.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
 
+
+  # echo -e "${green}find CORS vulnerability ...${reset}"
+  # echo https://google.com | hakrawler -u | httpx | CorsMe 
+
+
+
+  echo -e "${green}Starting up listen server...${reset}"
+  interactsh-client  -v &> ./$domain/$foldername/listen_server.txt & SERVER_PID=$!
+  sleep 5 # to properly start listen server
+  LISTENSERVER=$(tail -n 1 ./$domain/$foldername/listen_server.txt)
+  LISTENSERVER=$(echo $LISTENSERVER | cut -f2 -d ' ')
+  echo "Listen server is up $LISTENSERVER with PID=$SERVER_PID"
+
+
+  echo -e "${green}find SSRF vulnerability ...${reset}"
+  cat ./$domain/$foldername/waybackurls.txt | gf ssrf | qsreplace https://$LISTENSERVER | httpx -silent | tee ./$domain/$foldername/ssrf_url.txt
+  notify -bulk -data ./$domain/$foldername/ssrf_url.txt -silent
+
+
+  echo "killing listen server $SERVER_PID..."
+  kill -9 $SERVER_PID &> /dev/null || true
+
+
 }
 
 
