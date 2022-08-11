@@ -246,12 +246,7 @@ dirsearcher(){
 
 vulnscanner(){
   echo -e "${green}Starting vuln scanner with nuclei...${reset}"
-  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
-
-
-  # sql injection
-  # echo -e "${green}find sql injection with wayback ...${reset}"
-  # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
+  cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth,cache -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
 
 
   echo -e "${green}find Xss vulnerability ...${reset}"
@@ -261,12 +256,21 @@ vulnscanner(){
 
 
 
+  # echo -e "${green}find sql injection with wayback ...${reset}"
+  # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
+
+
   # echo -e "${green}find open redirect vulnerability ...${reset}"
   # cat ./$domain/$foldername/waybackurls.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
 
 
   # echo -e "${green}find CORS vulnerability ...${reset}"
   # echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
+
+
+  # echo -e "${green}find Prototype Pollution vulnerability ...${reset}"
+  # echo https://google.com | hakrawler -u | httpx -silent | ppmap 
+
 
 
 
