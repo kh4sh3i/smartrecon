@@ -1,4 +1,4 @@
-<img src="img/logo.png" />
+<img src="img/logo.png" style="width: 300px; display: block; margin: 0px auto;" />
 
 # smartrecon
 smartrecon is a script written in Bash, it is intended to automate some tedious tasks of reconnaissance and information gathering
