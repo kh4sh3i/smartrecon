@@ -60,6 +60,15 @@ chmod +x install.sh
 *  notify
 *  Seclists collection
 
+## Vulnerability 
+this is not only recon tools ! we automate find bug for your :D
+today we can find below bug :
+* XSS
+* SSRF
+* data exposure
+* Broken authentication
+* cache poisoning
+
 
 ### Tips
 for send notification you should config ($HOME/.config/notify/provider-config.yaml) with discord webhook ulr. read [Notification system for your Bug Bounty Automation](https://hakin9.org/notification-system-for-your-bug-bounty-automation-by-anubhav-singh/)
