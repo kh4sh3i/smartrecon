@@ -266,7 +266,7 @@ vulnscanner(){
 
 
   # echo -e "${green}find CORS vulnerability ...${reset}"
-  # echo https://google.com | hakrawler -u | httpx | CorsMe 
+  # echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
 
 
 
@@ -285,6 +285,10 @@ vulnscanner(){
 
   echo "killing listen server $SERVER_PID..."
   kill -9 $SERVER_PID &> /dev/null || true
+
+ 
+  # echo -e "${green}find dom xss with parameter pollution vulnerability ...${reset}"
+  # cat ./$domain/$foldername/waybackurls.txt | httpx -silent | ppmap
 
 
 }
