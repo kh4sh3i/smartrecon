@@ -301,7 +301,7 @@ vulnscanner(){
   notify -bulk -data ./$domain/$foldername/ssrf_url.txt -silent
 
   # kill listen server
-  kill_listen_server()
+  kill_listen_server
 
 
 }
