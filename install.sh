@@ -135,10 +135,10 @@ go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 echo "done"
 
 
-echo "installing smartrecon"
-git clone https://github.com/kh4sh3i/smartrecon.git
-cd ~/tools/
-echo "done"
+# echo "installing smartrecon"
+# git clone https://github.com/kh4sh3i/smartrecon.git
+# cd ~/tools/
+# echo "done"
 
 
 echo "installing feroxbuster"

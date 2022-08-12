@@ -24,18 +24,6 @@ while getopts ":d:e:r:" o; do
         d)
             domain=${OPTARG}
             ;;
-
-            #### working on subdomain exclusion
-        e)
-            set -f
-	    IFS=","
-	    excluded+=($OPTARG)
-	    unset IFS
-            ;;
-
-		r)
-            subreport+=("$OPTARG")
-            ;;
         *)
             usage
             ;;
@@ -80,10 +68,6 @@ recon(){
 #  amass3=`amass track -d $domain`
 
 
-
-
-
-
   nsrecords $domain
   # excludedomains
   echo "${yellow}Starting discovery... ${reset}"
@@ -92,20 +76,6 @@ recon(){
 
 }
 
-# excludedomains(){
-#   # from @incredincomp with love <3
-#   echo "Excluding domains (if you set them with -e)..."
-#   IFS=$'\n'
-#   # prints the $excluded array to excluded.txt with newlines 
-#   printf "%s\n" "${excluded[*]}" > ./$domain/$foldername/excluded.txt
-#   # this form of grep takes two files, reads the input from the first file, finds in the second file and removes
-#   grep -vFf ./$domain/$foldername/excluded.txt ./$domain/$foldername/alldomains.txt > ./$domain/$foldername/alldomains2.txt
-#   mv ./$domain/$foldername/alldomains2.txt ./$domain/$foldername/alldomains.txt
-#   #rm ./$domain/$foldername/excluded.txt # uncomment to remove excluded.txt, I left for testing purposes
-#   echo "Subdomains that have been excluded from discovery:"
-#   printf "%s\n" "${excluded[@]}"
-#   unset IFS
-# }
 
 shuffle_dns(){
   cat ./$domain/$foldername/$domain.txt | dnsgen - | shuffledns -d $domain -silent -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
@@ -214,28 +184,6 @@ screenshots(){
 }
 
 
-
-
-# waybackrecon () {
-# echo "Scraping wayback for data..."
-# cat ./$domain/$foldername/urllist.txt | waybackurls > ./$domain/$foldername/wayback-data/waybackurls.txt
-# cat ./$domain/$foldername/wayback-data/waybackurls.txt  | sort -u | unfurl --unique keys > ./$domain/$foldername/wayback-data/paramlist.txt
-# [ -s ./$domain/$foldername/wayback-data/paramlist.txt ] && echo "Wordlist saved to /$domain/$foldername/wayback-data/paramlist.txt"
-
-# cat ./$domain/$foldername/wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.js(\?|$)" | sort -u > ./$domain/$foldername/wayback-data/jsurls.txt
-# [ -s ./$domain/$foldername/wayback-data/jsurls.txt ] && echo "JS Urls saved to /$domain/$foldername/wayback-data/jsurls.txt"
-
-# cat ./$domain/$foldername/wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.php(\?|$) | sort -u " > ./$domain/$foldername/wayback-data/phpurls.txt
-# [ -s ./$domain/$foldername/wayback-data/phpurls.txt ] && echo "PHP Urls saved to /$domain/$foldername/wayback-data/phpurls.txt"
-
-# cat ./$domain/$foldername/wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.aspx(\?|$) | sort -u " > ./$domain/$foldername/wayback-data/aspxurls.txt
-# [ -s ./$domain/$foldername/wayback-data/aspxurls.txt ] && echo "ASP Urls saved to /$domain/$foldername/wayback-data/aspxurls.txt"
-
-# cat ./$domain/$foldername/wayback-data/waybackurls.txt  | sort -u | grep -P "\w+\.jsp(\?|$) | sort -u " > ./$domain/$foldername/wayback-data/jspurls.txt
-# [ -s ./$domain/$foldername/wayback-data/jspurls.txt ] && echo "JSP Urls saved to /$domain/$foldername/wayback-data/jspurls.txt"
-# }
-
-
 interesting(){
 	echo -e "${green}find interesting data in site...${reset}"
 	cat ./$domain/$foldername/urllist.txt | waybackurls | qsreplace  -a | tee ./$domain/$foldername/waybackurls.txt
@@ -322,7 +270,7 @@ master_report()
     <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">' >> ./$domain/$foldername/master_report.html
     echo "<title>Recon Report for $domain</title>
-    <style>.status.redirect{color:#d0b200}.status.fivehundred{color:#DD4A68}.status.jackpot{color:#0dee00}img{padding:5px;width:360px}img:hover{box-shadow:0 0 2px 1px rgba(0,140,186,.5)}pre{font-family:Inconsolata,monospace}pre{margin:0 0 20px}pre{overflow-x:auto}article,header,img{display:block}#wrapper:after,.blog-description:after,.clearfix:after{content:}.container{position:relative}html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}h1{margin:.67em 0}h1,h2{margin-bottom:20px}a{background-color:transparent;-webkit-text-decoration-skip:objects;text-decoration:none}.container,table{width:100%}.site-header{overflow:auto}.post-header,.post-title,.site-header,.site-title,h1,h2{text-transform:uppercase}p{line-height:1.5em}pre,table td{padding:10px}h2{padding-top:40px;font-weight:900}a{color:#00a0fc}body,html{height:100%}body{margin:0;background:#fefefe;color:#424242;font-family:Raleway,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,'Helvetica Neue',Arial,sans-serif;font-size:24px}h1{font-size:35px}h2{font-size:28px}p{margin:0 0 30px}pre{background:#f1f0ea;border:1px solid #dddbcc;border-radius:3px;font-size:16px}.row{display:flex}.column{flex:100%}table tbody>tr:nth-child(odd)>td,table tbody>tr:nth-child(odd)>th{background-color:#f7f7f3}table th{padding:0 10px 10px;text-align:left}.post-header,.post-title,.site-header{text-align:center}table tr{border-bottom:1px dotted #aeadad}::selection{background:#fff5b8;color:#000;display:block}::-moz-selection{background:#fff5b8;color:#000;display:block}.clearfix:after{display:table;clear:both}.container{max-width:100%}#wrapper{height:auto;min-height:100%;margin-bottom:-265px}#wrapper:after{display:block;height:265px}.site-header{padding:40px 0 0}.site-title{float:left;font-size:14px;font-weight:600;margin:0}.site-title a{float:left;background:#00a0fc;color:#fefefe;padding:5px 10px 6px}.post-container-left{width:49%;float:left;margin:auto}.post-container-right{width:49%;float:right;margin:auto}.post-header{border-bottom:1px solid #333;margin:0 0 50px;padding:0}.post-title{font-size:55px;font-weight:900;margin:15px 0}.blog-description{color:#aeadad;font-size:14px;font-weight:600;line-height:1;margin:25px 0 0;text-align:center}.single-post-container{margin-top:50px;padding-left:15px;padding-right:15px;box-sizing:border-box}body.dark{background-color:#1e2227;color:#fff}body.dark pre{background:#282c34}body.dark table tbody>tr:nth-child(odd)>td,body.dark table tbody>tr:nth-child(odd)>th{background:#282c34}input{font-family:Inconsolata,monospace} body.dark .status.redirect{color:#ecdb54} body.dark input{border:1px solid ;border-radius: 3px; background:#282c34;color: white} body.dark label{color:#f1f0ea} body.dark pre{color:#fff}</style>
+    <style>.status.redirect{color:#d0b200}.status.fivehundred{color:#DD4A68}.status.jackpot{color:#0dee00}img{padding:5px;width:360px}img:hover{box-shadow:0 0 2px 1px rgba(0,140,186,.5)}pre{font-family:Inconsolata,monospace}pre{margin:0 0 20px}pre{overflow-x:auto}article,header,img{display:block}#wrapper:after,.blog-description:after,.clearfix:after{content:}.container{position:relative}html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}h1{margin:.67em 0}h1,h2{margin-bottom:20px}a{background-color:transparent;-webkit-text-decoration-skip:objects;text-decoration:none}.container,table{width:100%}.site-header{overflow:auto}.post-header,.post-title,.site-header,.site-title,h1,h2{text-transform:uppercase}p{line-height:1.5em}pre,table td{padding:10px}h2{padding-top:40px;font-weight:900}a{color:#00a0fc}body,html{height:100%}body{margin:0;background:#fefefe;color:#424242;font-family:Raleway,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,'Helvetica Neue',Arial,sans-serif;font-size:24px}h1{font-size:35px}h2{font-size:28px}p{margin:0 0 30px}pre{background:#f1f0ea;border:1px solid #dddbcc;border-radius:3px;font-size:16px}.row{display:flex}.column{flex:100%}table tbody>tr:nth-child(odd)>td,table tbody>tr:nth-child(odd)>th{background-color:#f7f7f3}table th{padding:0 10px 10px;text-align:left}.post-header,.post-title,.site-header{text-align:center}table tr{border-bottom:1px dotted #aeadad}::selection{background:#fff5b8;color:#000;display:block}::-moz-selection{background:#fff5b8;color:#000;display:block}.clearfix:after{display:table;clear:both}.container{max-width:100%}#wrapper{height:auto;min-height:100%;margin-bottom:-265px}#wrapper:after{display:block;height:265px}.site-header{padding:40px 0 0}.site-title{float:left;font-size:14px;font-weight:600;margin:0}.site-title a{float:left;background:#00a0fc;color:#fefefe;padding:5px 10px 6px}.post-container-left{width:49%;float:left;margin:auto}.post-container-right{width:49%;float:right;margin:auto}.post-header{border-bottom:1px solid #333;margin:0 0 50px;padding:0}.post-title{font-weight:900;margin:15px 0}.blog-description{color:#aeadad;font-size:14px;font-weight:600;line-height:1;margin:25px 0 0;text-align:center}.single-post-container{margin-top:50px;padding-left:15px;padding-right:15px;box-sizing:border-box}body.dark{background-color:#1e2227;color:#fff}body.dark pre{background:#282c34}body.dark table tbody>tr:nth-child(odd)>td,body.dark table tbody>tr:nth-child(odd)>th{background:#282c34}input{font-family:Inconsolata,monospace} body.dark .status.redirect{color:#ecdb54} body.dark input{border:1px solid ;border-radius: 3px; background:#282c34;color: white} body.dark label{color:#f1f0ea} body.dark pre{color:#fff}</style>
     <script>
     document.addEventListener('DOMContentLoaded', (event) => {
       ((localStorage.getItem('mode') || 'dark') === 'dark') ? document.querySelector('body').classList.add('dark') : document.querySelector('body').classList.remove('dark')
@@ -352,13 +300,13 @@ master_report()
 
 
     echo '<div id="wrapper"><div id="container">' >> ./$domain/$foldername/master_report.html
-    echo "<h1 class=\"post-title\" itemprop=\"name headline\">Recon Report for <a href=\"http://$domain\">$domain</a></h1>" >> ./$domain/$foldername/master_report.html
+    echo "<h2 class=\"post-title\" itemprop=\"name headline\">Recon Report for <a href=\"http://$domain\">$domain</a></h2>" >> ./$domain/$foldername/master_report.html
     echo "<p class=\"blog-description\">Generated by smartrecon on $(date) </p>" >> ./$domain/$foldername/master_report.html
     echo '<div class="container single-post-container">
     <article class="post-container-left" itemscope="" itemtype="http://schema.org/BlogPosting">
     <header class="post-header"></header>
     <div class="post-content clearfix" itemprop="articleBody">
-    <h2>Total scanned subdomains</h2>
+    <h3>Total scanned subdomains</h3>
     <table id="myTable" class="stripe">
     <thead>
     <tr>
@@ -372,25 +320,27 @@ master_report()
     cat ./$domain/$foldername/urllist.txt |  sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g'  | while read nline; do
     # diresults=$(ls ~/tools/dirsearch/reports/$nline/ | grep -v old)
     echo "<tr>
-    <td><a href='$nline'>$nline</a></td>
+    <td><a href='http://$nline'>$nline</a></td>
     <td><a href='./reports/$nline.txt'>$(cat ./$domain/$foldername/reports/$nline.txt | wc -l)</a></td>
     </tr>" >> ./$domain/$foldername/master_report.html
     done
     echo "</tbody></table>
-    <div><h2>Possible NS Takeovers</h2></div>
+    <div><h3>Possible NS Takeovers</h3></div>
     <pre>" >> ./$domain/$foldername/master_report.html
     cat ./$domain/$foldername/pos.txt >> ./$domain/$foldername/master_report.html
 
-    echo "</pre><div><h2>Wayback data</h2></div>" >> ./$domain/$foldername/master_report.html
+    echo "</pre><div><h3>Wayback data</h3></div>" >> ./$domain/$foldername/master_report.html
     echo "<table><tbody>" >> ./$domain/$foldername/master_report.html
     [ -s ./$domain/$foldername/wayback-data/interesting.txt ] && echo "<tr><td><a href='./wayback-data/interesting.txt'>interestingEXT Urls</a></td></tr>" >> ./$domain/$foldername/master_report.html
     echo "</tbody></table>" >> ./$domain/$foldername/master_report.html
 
 
-    echo "<div><h2>vuln scanner</h2></div>
+    echo "<div><h3>vuln scanner</h3></div>
     <table><tbody>
     <tr><td><a href='./nuclei.txt'>nuclei scanner</a></td></tr>
     <tr><td><a href='./xss_result.txt'>Xss vuln</a></td></tr>
+    <tr><td><a href='./listen_server.txt'>OOB vuln</a></td></tr>
+    <tr><td><a href='./ssrf_url.txt'>SSRF vuln</a></td></tr>
     </tbody></table></div>" >> ./$domain/$foldername/master_report.html
 
 
@@ -399,17 +349,17 @@ master_report()
     <header class="post-header">
     </header>
     <div class="post-content clearfix" itemprop="articleBody">' >> ./$domain/$foldername/master_report.html
-    echo "<h2><a href='$server_ip:30200'>View screanshots Report</a></h2>" >> ./$domain/$foldername/master_report.html
+    echo "<h3><a href='http://$server_ip:30200'>View screanshots Report</a></h3>" >> ./$domain/$foldername/master_report.html
     #cat ./$domain/$foldername/ipaddress.txt >> ./$domain/$foldername/master_report.html
-    echo "<h2>Dig Info</h2>
+    echo "<h3>Dig Info</h3>
     <pre>
     $(dig $domain)
     </pre>" >> ./$domain/$foldername/master_report.html
-    echo "<h2>Host Info</h2>
+    echo "<h3>Host Info</h3>
     <pre>
     $(host $domain)
     </pre>" >> ./$domain/$foldername/master_report.html
-    echo "<h2>port scanning Results</h2>
+    echo "<h3>port scanning Results</h3>
     <pre>
       $(naabu -host $domain -silent -ec )
     </pre>

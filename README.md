@@ -11,16 +11,16 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 ## Main Features
 * Create a dated folder with recon notes
 * Grab subdomains using:
-    * subfinder, cert.sh
+    * subfinder, assetfinder, SonarSearch, cert.sh
     * dnsgen , shuffledns , massdns
 * Find any CNAME records pointing to unused cloud services like aws
 * Probe for live hosts over ports 80/443
-* Grab a screenshots of responsive hosts with eyewitness
+* Grab a screenshots of responsive hosts with gowitness
 * Extract wayback import data
 * Perform naabu on specific ports
 * Perform dirsearch for all subdomains
 * find exposure data with nuclei scanner
-* find xss vulnerability
+* find XSS, SSRF, cache poisoning vulnerability
 * send notifiaction wthi notify tools to discord,telegram,...
 * Generate a HTML report with output from the tools above
 
@@ -45,7 +45,7 @@ chmod +x install.sh
 *  shuffledns
 *  Massdns
 *  Httprobe
-*  EyeWitness
+*  goWitness
 *  Waybackurls
 *  httpx
 *  gf
