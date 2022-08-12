@@ -60,17 +60,17 @@ cd ~/tools/
 
 
 echo "Installing crobat"
-go install -v github.com/cgboal/sonarsearch/cmd/crobat@latest
+go install  github.com/cgboal/sonarsearch/cmd/crobat@latest
 echo "done"
 
 
 echo "Installing assetfinder"
-go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 echo "done"
 
 
 echo "Installing assetfinder"
-go install -v github.com/tomnomnom/assetfinder@latest
+go install  github.com/tomnomnom/assetfinder@latest
 echo "done"
 
 
@@ -88,7 +88,7 @@ echo "done"
 
 
 echo "installing shuffledns"
-go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest
+go install  github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest
 echo "done"
 
 
@@ -103,7 +103,7 @@ echo "done"
 
 
 echo "installing httprobe"
-go install -v github.com/tomnomnom/httprobe@latest
+go install github.com/tomnomnom/httprobe@latest
 echo "done"
 
 
@@ -118,19 +118,19 @@ echo "done"
 
 
 echo "installing gowitness"
-go install -v github.com/sensepost/gowitness@latest
+go install github.com/sensepost/gowitness@latest
 echo "done"
 
 
 
 
 echo "installing waybackurls"
-go install -v github.com/tomnomnom/waybackurls@latest
+go install github.com/tomnomnom/waybackurls@latest
 echo "done"
 
 
 echo "installing httpx"
-go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 echo "done"
 
 
@@ -146,13 +146,13 @@ echo "done"
 
 
 echo "installing ffuf"
-go install -v github.com/ffuf/ffuf@latest
+go install github.com/ffuf/ffuf@latest
 echo "done"
 
 
 
 echo "installing gf"
-go install -v github.com/tomnomnom/gf@latest
+go install github.com/tomnomnom/gf@latest
 echo "done"
 
 
@@ -174,28 +174,28 @@ echo "done"
 
 echo "installing naabu"
 sudo apt install -y libpcap-dev
-go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+go install github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 echo "done"
 
 echo "installing unfurl"
-go install -v github.com/tomnomnom/unfurl@latest
+go install github.com/tomnomnom/unfurl@latest
 echo "done"
 
 
 
 echo "installing notify"
-go install -v github.com/projectdiscovery/notify/cmd/notify@latest
+go install github.com/projectdiscovery/notify/cmd/notify@latest
 echo "done"
 
 
 echo "installing nuclei"
-go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+go install  github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 echo "done"
 
 
 
 echo "installing deduplicate"
-go install -v github.com/nytr0gen/deduplicate@latest
+go install github.com/nytr0gen/deduplicate@latest
 echo "done"
 
 
@@ -218,7 +218,7 @@ echo "done"
 
 
 echo "installing interactsh"
-go install -v github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+go install  github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
 echo "done"
 
 
