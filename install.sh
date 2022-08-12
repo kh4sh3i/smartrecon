@@ -108,12 +108,20 @@ echo "done"
 
 
 
-echo "installing EyeWitness"
-git clone https://github.com/FortyNorthSecurity/EyeWitness.git
-cd EyeWitness/Python/setup/
-sudo ./setup.sh
-cd ~/tools/
+# echo "installing EyeWitness"
+# git clone https://github.com/FortyNorthSecurity/EyeWitness.git
+# cd EyeWitness/Python/setup/
+# sudo ./setup.sh
+# cd ~/tools/
+# echo "done"
+
+
+
+echo "installing gowitness"
+go install -v github.com/sensepost/gowitness@latest
 echo "done"
+
+
 
 
 echo "installing waybackurls"
