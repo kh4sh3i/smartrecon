@@ -69,10 +69,7 @@ if [ -z "${domain}" ]; then
 fi
 
 
-
-# 1) first step of recon
 recon(){
-
   # public dataset search in project sonar (A rapid API for the Project Sonar dataset)
   echo -e "${green}1.Listing subdomains using crobat...${reset}"
   crobat -s $domain > ./$domain/$foldername/$domain.txt
@@ -101,27 +98,30 @@ recon(){
 #  amass3=`amass track -d $domain`
 }
 
+searchcrtsh(){
+  echo "${green}Checking http://crt.sh ${reset}"
+ ~/tools/massdns/scripts/ct.py $domain 2>/dev/null > ./$domain/$foldername/tmp.txt
+ [ -s ./$domain/$foldername/tmp.txt ] && cat ./$domain/$foldername/tmp.txt | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S -w  ./$domain/$foldername/crtsh.txt
+ cat ./$domain/$foldername/$domain.txt | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S -w  ./$domain/$foldername/domaintemp.txt
+}
+
 
 permutatesubdomains(){
-  cat ./$domain/$foldername/$domain.txt | dnsgen - | tee ./$domain/$foldername/dnsgen.txt
+  cat ./$domain/$foldername/$domain.txt | dnsgen - | sort -u | tee ./$domain/$foldername/dnsgen.txt
   mv ./$domain/$foldername/dnsgen.txt ./$domain/$foldername/$domain.txt
 }
 
 
 dnsprobing(){
   echo "${green}Started dnsprobing with shuffledns...${reset}"
-  cat ./$domain/$foldername/$domain.txt | shuffledns -d $domain -silent -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
+  cat ./$domain/$foldername/$domain.txt | sort -u |  shuffledns -d $domain -silent -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
   #  echo -e "4.1.Brute force all subdomain to find subdomain using shuffledns..."
   # shuffledns  -d $domain -silent -list ./$domain/$foldername/$domain.txt  -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
 }
 
 
-
-
 subdomain_takeover(){
-
   echo "${green}Started dns records check...${reset}"
-
   cat ./$domain/$foldername/mass.txt >> ./$domain/$foldername/temp.txt
   cat ./$domain/$foldername/domaintemp.txt >> ./$domain/$foldername/temp.txt
   cat ./$domain/$foldername/crtsh.txt >> ./$domain/$foldername/temp.txt
@@ -150,18 +150,7 @@ subdomain_takeover(){
   echo "${x%?}" >> ./$domain/$foldername/alldomains.txt
   done
   sleep 1
-
 }
-
-
-
-searchcrtsh(){
-  echo "${green}Checking http://crt.sh ${reset}"
- ~/tools/massdns/scripts/ct.py $domain 2>/dev/null > ./$domain/$foldername/tmp.txt
- [ -s ./$domain/$foldername/tmp.txt ] && cat ./$domain/$foldername/tmp.txt | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S -w  ./$domain/$foldername/crtsh.txt
- cat ./$domain/$foldername/$domain.txt | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S -w  ./$domain/$foldername/domaintemp.txt
-}
-
 
 
 checkhttprobe(){
@@ -201,7 +190,6 @@ directory_bruteforce(){
 }
 
 
-
 vulnscanner(){
   echo -e "${green}Starting vuln scanner with nuclei...${reset}"
   cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth,cache -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
@@ -212,28 +200,20 @@ vulnscanner(){
   cat ./$domain/$foldername/xss_raw_result.txt | cut -d ' ' -f2 | tee ./$domain/$foldername/xss_result.txt; notify -bulk -data ./$domain/$foldername/xss_result.txt -silent
   # cat test.txt | gf xss | sed ‘s/=.*/=/’ | sed ‘s/URL: //’ | tee testxss.txt ; dalfox file testxss.txt -b yours-xss-hunter-domain(e.g yours.xss.ht)
 
-
-
   # echo -e "${green}find sql injection with wayback ...${reset}"
   # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
-
 
   # echo -e "${green}find open redirect vulnerability ...${reset}"
   # cat ./$domain/$foldername/waybackurls.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
 
-
   # echo -e "${green}find CORS vulnerability ...${reset}"
   # echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
-
 
   # echo -e "${green}find Prototype Pollution vulnerability ...${reset}"
   # echo https://google.com | hakrawler -u | httpx -silent | ppmap 
 
-
- 
   # echo -e "${green}find dom xss with parameter pollution vulnerability ...${reset}"
   # cat ./$domain/$foldername/waybackurls.txt | httpx -silent | ppmap
-
 
   echo -e "${green}Starting up listen server...${reset}"
   interactsh-client  -v &> ./$domain/$foldername/listen_server.txt & SERVER_PID=$!
@@ -249,8 +229,6 @@ vulnscanner(){
 
   # kill listen server
   kill_listen_server
-
-
 }
 
 
@@ -377,8 +355,6 @@ logo(){
 #   \    ||   |   ||  |  ||  .  Y  |  |  |  .  Y|     T\     |l     !|  |  |
 #    \___jl___j___jl__j__jl__j\_j  l__j  l__j\_jl_____j \____j \___/ l__j__j${reset}"
 }
-
-
 
 
 cleantemp(){

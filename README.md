@@ -83,6 +83,10 @@ for send notification you should config ($HOME/.config/notify/provider-config.ya
 ## System Requirements
 * Recommended to run on vps with 1VCPU and 2GB ram.
 
+## Contributing
+If you want to contribute to a project and make it better, your help is very welcome. 
+
+
 
 ### Thanks
 * [nahamsec - Ben Sadeghipour](https://github.com/nahamsec)
