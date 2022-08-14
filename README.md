@@ -5,7 +5,12 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 
 ## Usage
 ```
-./smartrecon.sh -d domain.com
+sudo ./smartrecon.sh -d domain.com <option>
+  option:
+    -a | --alt   : Additionally permutate subdomains	
+    -b | --brute : Basic directory bruteforce
+    -f | --fuzz  : SSRF/XSS/nuclei fuzzing	
+
 ```
 
 ## Main Features
@@ -25,8 +30,6 @@ smartrecon is a script written in Bash, it is intended to automate some tedious 
 * Generate a HTML report with output from the tools above
 
 
-## System Requirements
-* Recommended to run on vps with 1VCPU and 2GB ram.
 
 ## Installation & Requirements
 ```
@@ -70,10 +73,15 @@ today we can find below bug :
 * data exposure
 * Broken authentication
 * cache poisoning
+* subdomain takeover
 
 
 ### Tips
-for send notification you should config ($HOME/.config/notify/provider-config.yaml) with discord webhook ulr. read [Notification system for your Bug Bounty Automation](https://hakin9.org/notification-system-for-your-bug-bounty-automation-by-anubhav-singh/)
+for send notification you should config ($HOME/.config/notify/provider-config.yaml) with discord webhook ulr.
+
+
+## System Requirements
+* Recommended to run on vps with 1VCPU and 2GB ram.
 
 
 ### Thanks

@@ -2,7 +2,6 @@
 
 dirsearchWordlist=~/tools/SecLists/Discovery/Web-Content/dirsearch.txt
 massdnsWordlist=~/tools/SecLists/Discovery/DNS/clean-jhaddix-dns.txt
-# EyeWitness=~/tools/EyeWitness/Python/EyeWitness.py
 feroxbuster=~/tools/feroxbuster
 paramspider=~/tools/ParamSpider/paramspider.py
 server_ip=$(curl -s ifconfig.me)
@@ -17,21 +16,55 @@ reset=`tput sgr0`
 SECONDS=0
 domain=
 subreport=
-usage() { echo -e "Usage: ./smartrecon.sh -d domain.com" 1>&2; exit 1; }
+usage() { 
+  echo -e "Usage: sudo ./smartrecon.sh -d domain.com <option> 
+  option:
+    -a | --alt   : Additionally permutate subdomains	
+    -b | --brute : Basic directory bruteforce
+    -f | --fuzz  : SSRF/LFI/SQLi fuzzing	" 1>&2; exit 1; 
+}
 
-while getopts ":d:e:r:" o; do
-    case "${o}" in
-        d)
-            domain=${OPTARG}
-            ;;
-        *)
-            usage
-            ;;
-    esac
-done
-shift $((OPTIND - 1))
 
-if [ -z "${domain}" ] && [[ -z ${subreport[@]} ]]; then
+# check for help arguments or exit with no arguments
+checkhelp(){
+  while [ "$1" != "" ]; do
+      case $1 in
+          -h | --help ) usage exit;;
+      esac
+      shift
+  done
+}
+
+
+# check for specifiec arguments (help)
+checkargs(){
+  while [ "$1" != "" ]; do
+      case $1 in
+          -a | --alt   )  alt="1";;
+          -b | --brute )  brute="1";;
+          -f | --fuzz  )  fuzz="1";;
+      esac
+      shift
+  done
+}
+
+
+##### Main
+if [ $# -eq 0 ]; then
+    usage
+    exit 1
+else
+  if [ $# -eq 1 ]; then
+    checkhelp "$@"
+  fi
+fi
+
+if [ $# -gt 1 ]; then
+  checkargs "$@"
+fi
+
+domain=$2
+if [ -z "${domain}" ]; then
    usage; exit 1;
 fi
 
@@ -66,19 +99,18 @@ recon(){
 
 #  echo -e "5.3.get new subdomains with amass track..."
 #  amass3=`amass track -d $domain`
-
-
-  nsrecords $domain
-  # excludedomains
-  echo "${yellow}Starting discovery... ${reset}"
-  discovery $domain
-  # cat ./$domain/$foldername/$domain.txt | sort -u > ./$domain/$foldername/$domain.txt
-
 }
 
 
-shuffle_dns(){
-  cat ./$domain/$foldername/$domain.txt | dnsgen - | shuffledns -d $domain -silent -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
+permutatesubdomains(){
+  cat ./$domain/$foldername/$domain.txt | dnsgen - | tee ./$domain/$foldername/dnsgen.txt
+  mv ./$domain/$foldername/dnsgen.txt ./$domain/$foldername/$domain.txt
+}
+
+
+dnsprobing(){
+  echo "${green}Started dnsprobing with shuffledns...${reset}"
+  cat ./$domain/$foldername/$domain.txt | shuffledns -d $domain -silent -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
   #  echo -e "4.1.Brute force all subdomain to find subdomain using shuffledns..."
   # shuffledns  -d $domain -silent -list ./$domain/$foldername/$domain.txt  -r ~/tools/massdns/lists/resolvers.txt -o ./$domain/$foldername/mass.txt
 }
@@ -86,20 +118,9 @@ shuffle_dns(){
 
 
 
-nsrecords(){
-  echo "${green}Checking http://crt.sh ${reset}"
-  searchcrtsh $domain
-  # echo "Starting Massdns Subdomain discovery this may take a while"
-  # mass $domain > /dev/null
-  # echo "Massdns finished..."
-
-  echo "${green}Started shuffledns with Subdomain permutation using dnsgen...${reset}"
-  shuffle_dns $domain
-
+subdomain_takeover(){
 
   echo "${green}Started dns records check...${reset}"
-  echo "Looking into CNAME Records..."
-
 
   cat ./$domain/$foldername/mass.txt >> ./$domain/$foldername/temp.txt
   cat ./$domain/$foldername/domaintemp.txt >> ./$domain/$foldername/temp.txt
@@ -110,8 +131,6 @@ nsrecords(){
   wildcard=$(cat ./$domain/$foldername/temp.txt | grep -m 1 $line)
   echo "$wildcard" >> ./$domain/$foldername/cleantemp.txt
   done
-
-
 
   cat ./$domain/$foldername/cleantemp.txt | grep CNAME >> ./$domain/$foldername/cnames.txt
   cat ./$domain/$foldername/cnames.txt | sort -u | while read line; do
@@ -137,28 +156,16 @@ nsrecords(){
 
 
 searchcrtsh(){
+  echo "${green}Checking http://crt.sh ${reset}"
  ~/tools/massdns/scripts/ct.py $domain 2>/dev/null > ./$domain/$foldername/tmp.txt
  [ -s ./$domain/$foldername/tmp.txt ] && cat ./$domain/$foldername/tmp.txt | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S -w  ./$domain/$foldername/crtsh.txt
  cat ./$domain/$foldername/$domain.txt | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S -w  ./$domain/$foldername/domaintemp.txt
 }
 
-# mass(){
-#  ~/tools/massdns/scripts/subbrute.py $massdnsWordlist $domain | ~/tools/massdns/bin/massdns -r ~/tools/massdns/lists/resolvers.txt -t A -q -o S | grep -v 142.54.173.92 > ./$domain/$foldername/mass.txt
-# }
 
 
-
-
-discovery(){
-	hostalive $domain
-  screenshots $domain
-	# waybackrecon $domain
-  interesting $domain
-	dirsearcher
-}
-
-hostalive(){
-  echo "Probing for live hosts..."
+checkhttprobe(){
+  echo "Probing for live hosts with httprobe..."
   cat ./$domain/$foldername/alldomains.txt | sort -u | httprobe -c 50 -t 3000 >> ./$domain/$foldername/responsive.txt
   cat ./$domain/$foldername/responsive.txt | sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g' | sort -u | while read line; do
   probeurl=$(cat ./$domain/$foldername/responsive.txt | sort -u | grep -m 1 $line)
@@ -167,14 +174,6 @@ hostalive(){
   echo "$(cat ./$domain/$foldername/urllist.txt | sort -u)" > ./$domain/$foldername/urllist.txt
   echo  "${yellow}Total of $(wc -l ./$domain/$foldername/urllist.txt | awk '{print $1}') live subdomains were found${reset}"
 }
-
-
-# eyewitness(){
-#   echo "${green}starting eyewitness scan...${reset}"
-#   cat ./$domain/$foldername/urllist.txt | 
-#   python3 $EyeWitness -f ./$domain/$foldername/urllist.txt -d ./$domain/$foldername/screenshots/  --web  --timeout 10 --no-prompt
-# }
-
 
 
 screenshots(){
@@ -190,8 +189,8 @@ interesting(){
   cat ./$domain/$foldername/waybackurls.txt | gf interestingEXT | grep -viE '(\.(js|css|pdf|svg|png|jpg|woff))' | sort -u | httpx -status-code -mc 200 -silent | awk '{ print $1}' > ./$domain/$foldername/wayback-data/interesting.txt
 }
 
-dirsearcher(){
-  echo -e "${green}Starting directory search with FFUF...${reset}"
+directory_bruteforce(){
+  echo -e "${green}Starting directory bruteforce with FFUF...${reset}"
   # cat ./$domain/$foldername/urllist.txt | $feroxbuster --stdin --silent -s 200 -n -w $dirsearchWordlist -o ./$domain/$foldername/directory.txt
   
   for sub in $(cat ./$domain/$foldername/urllist.txt);
@@ -428,7 +427,15 @@ fi
 
   cleantemp
   recon $domain
-  vulnscanner $domain
+  searchcrtsh $domain
+  if [[ -n "$alt" ]]; then permutatesubdomains $domain fi
+  dnsprobing $domain
+  subdomain_takeover $domain
+	checkhttprobe $domain
+  screenshots $domain
+  interesting $domain
+  if [[ -n "$brute" ]]; then directory_bruteforce $domain fi
+  if [[ -n "$fuzz" ]]; then vulnscanner $domain fi
   master_report $domain
   echo "${green}Scan for $domain finished successfully${reset}" | notify -silent
   duration=$SECONDS
