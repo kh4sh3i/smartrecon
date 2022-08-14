@@ -428,14 +428,20 @@ fi
   cleantemp
   recon $domain
   searchcrtsh $domain
-  if [[ -n "$alt" ]]; then permutatesubdomains $domain fi
+  if [[ -n "$alt" ]]; then 
+    permutatesubdomains $domain
+  fi
   dnsprobing $domain
   subdomain_takeover $domain
 	checkhttprobe $domain
   screenshots $domain
   interesting $domain
-  if [[ -n "$brute" ]]; then directory_bruteforce $domain fi
-  if [[ -n "$fuzz" ]]; then vulnscanner $domain fi
+  if [[ -n "$brute" ]]; then 
+    directory_bruteforce $domain
+  fi
+  if [[ -n "$fuzz" ]]; then 
+    vulnscanner $domain
+  fi
   master_report $domain
   echo "${green}Scan for $domain finished successfully${reset}" | notify -silent
   duration=$SECONDS
