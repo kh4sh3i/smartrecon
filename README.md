@@ -91,3 +91,9 @@ If you want to contribute to a project and make it better, your help is very wel
 ### Thanks
 * [nahamsec - Ben Sadeghipour](https://github.com/nahamsec)
 * [Tom Hudson - Tomonomnom](https://github.com/tomnomnom)
+* [Jason Haddix](https://github.com/jhaddix)
+* [ProjectDiscovery](https://github.com/projectdiscovery)
+* [Orange Cyberdefense](https://github.com/sensepost)
+* [HAHWUL](https://github.com/hahwul)
+* [Devansh Batham](https://github.com/devanshbatham)
+* [Daniel Miessler](https://github.com/danielmiessler)
