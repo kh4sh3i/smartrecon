@@ -196,9 +196,10 @@ vulnscanner(){
 
 
   echo -e "${green}find Xss vulnerability ...${reset}"
-  python3 $paramspider -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg,jpeg,pdf | qsreplace  -a | sed '1,4d' | httpx -silent | dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
+  python3 $paramspider -d $domain -s TRUE -e jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg,txt,eot -q -o ./$domain/$foldername/xss_result.txt 
+  cat ./$domain/$foldername/xss_result.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 |  dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
   cat ./$domain/$foldername/xss_raw_result.txt | cut -d ' ' -f2 | tee ./$domain/$foldername/xss_result.txt; notify -bulk -data ./$domain/$foldername/xss_result.txt -silent
-  # cat test.txt | gf xss | sed ‘s/=.*/=/’ | sed ‘s/URL: //’ | tee testxss.txt ; dalfox file testxss.txt -b yours-xss-hunter-domain(e.g yours.xss.ht)
+
 
   # echo -e "${green}find sql injection with wayback ...${reset}"
   # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
