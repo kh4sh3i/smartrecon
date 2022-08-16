@@ -9,7 +9,10 @@ sudo ./smartrecon.sh -d domain.com <option>
   option:
     -a | --alt   : Additionally permutate subdomains	
     -b | --brute : Basic directory bruteforce
-    -f | --fuzz  : SSRF/XSS/nuclei fuzzing	
+    -f | --fuzz  : SSRF/XSS/Nuclei fuzzing	
+    -s | --ssrf  : SSRF fuzzing	
+    -x | --xss   : XSS fuzzing	  
+    -n | --nuclei: Nuclei fuzzing	
 
 ```
 

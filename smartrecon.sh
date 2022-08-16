@@ -21,7 +21,10 @@ usage() {
   option:
     -a | --alt   : Additionally permutate subdomains	
     -b | --brute : Basic directory bruteforce
-    -f | --fuzz  : SSRF/LFI/SQLi fuzzing	" 1>&2; exit 1; 
+    -f | --fuzz  : SSRF/XSS/Nuclei fuzzing	
+    -s | --ssrf  : SSRF fuzzing	
+    -x | --xss   : XSS fuzzing	  
+    -n | --nuclei: Nuclei fuzzing	" 1>&2; exit 1; 
 }
 
 
@@ -42,7 +45,10 @@ checkargs(){
       case $1 in
           -a | --alt   )  alt="1";;
           -b | --brute )  brute="1";;
-          -f | --fuzz  )  fuzz="1";;
+          -f | --fuzz  )  ssrf="1" xss="1" nuclei="1" ;;
+          -s | --ssrf  )  ssrf="1";;
+          -x | --xss   )  xss="1";;
+          -n | --nuclei)  nuclei="1";;
       esac
       shift
   done
@@ -190,11 +196,13 @@ directory_bruteforce(){
 }
 
 
-vulnscanner(){
+NucleiScanner(){
   echo -e "${green}Starting vuln scanner with nuclei...${reset}"
   cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth,cache -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
+}
 
 
+SSRF_Scanner(){
   echo -e "${green}Starting up listen server...${reset}"
   interactsh-client  -v &> ./$domain/$foldername/listen_server.txt & SERVER_PID=$!
   sleep 5 # to properly start listen server
@@ -209,29 +217,32 @@ vulnscanner(){
 
   # kill listen server
   kill_listen_server
+}
 
 
+XSS_Scanner(){
   echo -e "${green}find Xss vulnerability ...${reset}"
   python3 $paramspider -d $domain -s TRUE -e jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg,txt,eot -q -o ./$domain/$foldername/xss_result.txt 
   cat ./$domain/$foldername/xss_result.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 |  dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
   cat ./$domain/$foldername/xss_raw_result.txt | cut -d ' ' -f2 | tee ./$domain/$foldername/xss_result.txt; notify -bulk -data ./$domain/$foldername/xss_result.txt -silent
-
-  # echo -e "${green}find sql injection with wayback ...${reset}"
-  # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
-
-  # echo -e "${green}find open redirect vulnerability ...${reset}"
-  # cat ./$domain/$foldername/waybackurls.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
-
-  # echo -e "${green}find CORS vulnerability ...${reset}"
-  # echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
-
-  # echo -e "${green}find Prototype Pollution vulnerability ...${reset}"
-  # echo https://google.com | hakrawler -u | httpx -silent | ppmap 
-
-  # echo -e "${green}find dom xss with parameter pollution vulnerability ...${reset}"
-  # cat ./$domain/$foldername/waybackurls.txt | httpx -silent | ppmap
-
 }
+
+# echo -e "${green}find sql injection with wayback ...${reset}"
+# python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
+
+# echo -e "${green}find open redirect vulnerability ...${reset}"
+# cat ./$domain/$foldername/waybackurls.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
+
+# echo -e "${green}find CORS vulnerability ...${reset}"
+# echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
+
+# echo -e "${green}find Prototype Pollution vulnerability ...${reset}"
+# echo https://google.com | hakrawler -u | httpx -silent | ppmap 
+
+# echo -e "${green}find dom xss with parameter pollution vulnerability ...${reset}"
+# cat ./$domain/$foldername/waybackurls.txt | httpx -silent | ppmap
+
+
 
 
 kill_listen_server(){
@@ -417,8 +428,14 @@ fi
   if [[ -n "$brute" ]]; then 
     directory_bruteforce $domain
   fi
-  if [[ -n "$fuzz" ]]; then 
-    vulnscanner $domain
+  if [[ -n "$nuclei" ]]; then 
+    NucleiScanner $domain
+  fi
+  if [[ -n "$ssrf" ]]; then 
+    SSRF_Scanner $domain
+  fi
+  if [[ -n "$xss" ]]; then 
+    XSS_Scanner $domain
   fi
   master_report $domain
   echo "${green}Scan for $domain finished successfully${reset}" | notify -silent
