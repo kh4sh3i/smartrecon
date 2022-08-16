@@ -195,11 +195,26 @@ vulnscanner(){
   cat ./$domain/$foldername/urllist.txt | nuclei -tags exposure,unauth,cache -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
 
 
+  echo -e "${green}Starting up listen server...${reset}"
+  interactsh-client  -v &> ./$domain/$foldername/listen_server.txt & SERVER_PID=$!
+  sleep 5 # to properly start listen server
+  LISTENSERVER=$(tail -n 1 ./$domain/$foldername/listen_server.txt)
+  LISTENSERVER=$(echo $LISTENSERVER | cut -f2 -d ' ')
+  echo "Listen server is up $LISTENSERVER with PID=$SERVER_PID"
+
+
+  echo -e "${green}find SSRF vulnerability ...${reset}"
+  cat ./$domain/$foldername/waybackurls.txt | gf ssrf | qsreplace https://$LISTENSERVER | httpx -silent | tee ./$domain/$foldername/ssrf_url.txt
+  notify -bulk -data ./$domain/$foldername/ssrf_url.txt -silent
+
+  # kill listen server
+  kill_listen_server
+
+
   echo -e "${green}find Xss vulnerability ...${reset}"
   python3 $paramspider -d $domain -s TRUE -e jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg,txt,eot -q -o ./$domain/$foldername/xss_result.txt 
   cat ./$domain/$foldername/xss_result.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 |  dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
   cat ./$domain/$foldername/xss_raw_result.txt | cut -d ' ' -f2 | tee ./$domain/$foldername/xss_result.txt; notify -bulk -data ./$domain/$foldername/xss_result.txt -silent
-
 
   # echo -e "${green}find sql injection with wayback ...${reset}"
   # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
@@ -216,20 +231,6 @@ vulnscanner(){
   # echo -e "${green}find dom xss with parameter pollution vulnerability ...${reset}"
   # cat ./$domain/$foldername/waybackurls.txt | httpx -silent | ppmap
 
-  echo -e "${green}Starting up listen server...${reset}"
-  interactsh-client  -v &> ./$domain/$foldername/listen_server.txt & SERVER_PID=$!
-  sleep 5 # to properly start listen server
-  LISTENSERVER=$(tail -n 1 ./$domain/$foldername/listen_server.txt)
-  LISTENSERVER=$(echo $LISTENSERVER | cut -f2 -d ' ')
-  echo "Listen server is up $LISTENSERVER with PID=$SERVER_PID"
-
-
-  echo -e "${green}find SSRF vulnerability ...${reset}"
-  cat ./$domain/$foldername/waybackurls.txt | gf ssrf | qsreplace https://$LISTENSERVER | httpx -silent | tee ./$domain/$foldername/ssrf_url.txt
-  notify -bulk -data ./$domain/$foldername/ssrf_url.txt -silent
-
-  # kill listen server
-  kill_listen_server
 }
 
 
