@@ -22,7 +22,8 @@ sudo ./smartrecon.sh -d domain.com <option>
     * subfinder, assetfinder, SonarSearch, cert.sh
     * dnsgen , shuffledns , massdns
 * Find any CNAME records pointing to unused cloud services like aws
-* Probe for live hosts over ports 80/443
+* Probe for live hosts with shuffledns and fresh resolver
+* Web servers hunting [httpx] over top 50 ports
 * Grab a screenshots of responsive hosts with gowitness
 * Extract wayback import data
 * Perform naabu on specific ports
@@ -48,9 +49,9 @@ chmod +x install.sh
 *  subfinder
 *  assetfinder
 *  dnsgen
+*  Fresh Resolvers
 *  shuffledns
 *  Massdns
-*  Httprobe
 *  goWitness
 *  Waybackurls
 *  httpx
@@ -89,6 +90,13 @@ for send notification you should config ($HOME/.config/notify/provider-config.ya
 
 ## Contributing
 If you want to contribute to a project and make it better, your help is very welcome. 
+
+## product Roadmap
+* add CORS scanner
+* add open redirect scanner
+* add Prototype Pollution scanner
+* add sql injection scanner
+* increase performance
 
 
 

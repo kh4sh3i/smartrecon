@@ -103,9 +103,9 @@ echo "done"
 
 
 
-echo "installing httprobe"
-go install github.com/tomnomnom/httprobe@latest
-echo "done"
+# echo "installing httprobe"
+# go install github.com/tomnomnom/httprobe@latest
+# echo "done"
 
 
 
