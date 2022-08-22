@@ -62,12 +62,16 @@ chmod +x install.sh
 *  sqlmap-dev
 *  Unfurl
 *  nuclei
-*  deduplicate
 *  dalfox
 *  ParamSpider
 *  qsreplace
 *  notify
 *  Seclists collection
+*  CorsMe
+*  ppmap
+
+
+
 
 ## Vulnerability 
 this is not only recon tools ! we automate find bug for your :D

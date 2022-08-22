@@ -194,10 +194,21 @@ go install  github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 echo "done"
 
 
-
-echo "installing deduplicate"
-go install github.com/nytr0gen/deduplicate@latest
+echo "installing CorsMe"
+go install github.com/shivangx01b/CorsMe@latest
 echo "done"
+
+
+
+echo "installing CorsMe"
+go install github.com/kleiton0x00/ppmap@latest
+echo "done"
+
+
+
+# echo "installing deduplicate"
+# go install github.com/nytr0gen/deduplicate@latest
+# echo "done"
 
 
 echo "installing dalfox"

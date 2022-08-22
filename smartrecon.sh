@@ -172,11 +172,19 @@ screenshots(){
 }
 
 
-interesting(){
-	echo -e "${green}find interesting data in site...${reset}"
-	cat ./$domain/$foldername/subdomain_live.txt | waybackurls | qsreplace  -a | tee ./$domain/$foldername/waybackurls.txt
-  cat ./$domain/$foldername/waybackurls.txt | gf interestingEXT | grep -viE '(\.(js|css|pdf|svg|png|jpg|woff))' | sort -u | httpx -status-code -mc 200 -silent | awk '{ print $1}' > ./$domain/$foldername/interesting.txt
+getgau(){
+  echo "${green}fetch url from wayback,commoncrawl,otx,urlscan...${reset}"
+  cat ./$domain/$foldername/subdomain_live.txt | gau --blacklist jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,svg,eot  | qsreplace -a | tee ./$domain/$foldername/gau_output.txt
+  echo "${green}gau done.${reset}"
 }
+
+
+
+get_interesting(){
+	echo -e "${green}find interesting data in site...${reset}"
+  cat ./$domain/$foldername/gau_output.txt | gf interestingEXT | grep -viE '(\.(js|css|svg|png|jpg|woff))' | qsreplace -a | httpx -mc 200 -silent | awk '{ print $1}' > ./$domain/$foldername/interesting.txt
+}
+
 
 directory_bruteforce(){
   echo -e "${green}Starting directory bruteforce with FFUF...${reset}"
@@ -206,7 +214,7 @@ SSRF_Scanner(){
 
 
   echo -e "${green}find SSRF vulnerability ...${reset}"
-  cat ./$domain/$foldername/waybackurls.txt | gf ssrf | qsreplace https://$LISTENSERVER | httpx -silent 
+  cat ./$domain/$foldername/gau_output.txt | gf ssrf | qsreplace https://$LISTENSERVER | httpx -silent 
   notify -bulk -data ./$domain/$foldername/listen_server.txt -silent
 
   # kill listen server
@@ -216,25 +224,34 @@ SSRF_Scanner(){
 
 XSS_Scanner(){
   echo -e "${green}find Xss vulnerability ...${reset}"
-  python3 $paramspider -d $domain -s TRUE -e jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg,txt,eot -q -o ./$domain/$foldername/xss_result.txt 
-  cat ./$domain/$foldername/xss_result.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 |  dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
+  # python3 $paramspider -d $domain -s TRUE -e jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg,txt,eot -q -o ./$domain/$foldername/xss_result.txt 
+  cat ./$domain/$foldername/gau_output.txt | gf xss | qsreplace  -a | httpx -silent -threads 500 -mc 200 |  dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
   cat ./$domain/$foldername/xss_raw_result.txt | cut -d ' ' -f2 | tee ./$domain/$foldername/xss_result.txt; notify -bulk -data ./$domain/$foldername/xss_result.txt -silent
 }
+
+
+CORS_Scanner(){
+  echo -e "${green}find CORS vulnerability ...${reset}"
+  # echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
+  cat ./$domain/$foldername/gau_output.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 | CorsMe - t 70 -output ./$domain/$foldername/cors_result.txt
+}
+
+
+Prototype_Pollution_Scanner(){
+  echo -e "${green}find Prototype Pollution vulnerability ...${reset}"
+  cat ./$domain/$foldername/gau_output.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 | ppmap | tee ./$domain/$foldername/prototype_pollution_result.txt
+}
+
+
 
 # echo -e "${green}find sql injection with wayback ...${reset}"
 # python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
 
+
+
+
 # echo -e "${green}find open redirect vulnerability ...${reset}"
-# cat ./$domain/$foldername/waybackurls.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
-
-# echo -e "${green}find CORS vulnerability ...${reset}"
-# echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
-
-# echo -e "${green}find Prototype Pollution vulnerability ...${reset}"
-# echo https://google.com | hakrawler -u | httpx -silent | ppmap 
-
-# echo -e "${green}find dom xss with parameter pollution vulnerability ...${reset}"
-# cat ./$domain/$foldername/waybackurls.txt | httpx -silent | ppmap
+# cat ./$domain/$foldername/gau_output.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
 
 
 
@@ -401,6 +418,7 @@ fi
   touch ./$domain/$foldername/interesting.txt
   touch ./$domain/$foldername/directory.txt
   touch ./$domain/$foldername/xss_raw_result.txt
+  touch ./$domain/$foldername/gau_output.txt
   touch ./$domain/$foldername/html_report.html
 
   cleantemp
@@ -414,7 +432,8 @@ fi
   subdomain_takeover $domain
 	checkhttprobe $domain
   screenshots $domain
-  interesting $domain
+  getgau $domain
+  get_interesting $domain
   if [[ -n "$brute" ]]; then 
     directory_bruteforce $domain
   fi
@@ -427,6 +446,14 @@ fi
   if [[ -n "$xss" ]]; then 
     XSS_Scanner $domain
   fi
+  # if [[ -n "$cors" ]]; then 
+  #   CORS_Scanner $domain
+  # fi
+  # if [[ -n "$prototype" ]]; then 
+  #   Prototype_Pollution_Scanner $domain
+  # fi
+
+
   report $domain
   echo "${green}Scan for $domain finished successfully${reset}" | notify -silent
   duration=$SECONDS
