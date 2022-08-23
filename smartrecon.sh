@@ -22,11 +22,11 @@ usage() {
   option:
     -a | --alt   : Additionally permutate subdomains	
     -b | --brute : Basic directory bruteforce
-    -f | --fuzz  : SSRF/XSS/Nuclei/CORSE/prototype fuzzing	
+    -f | --fuzz  : SSRF/XSS/Nuclei/CORS/prototype fuzzing	
     -s | --ssrf  : SSRF fuzzing	
     -x | --xss   : XSS fuzzing	  
     -n | --nuclei: Nuclei fuzzing	
-    -c | --cors  : Nuclei fuzzing	
+    -c | --cors  : CORS fuzzing	
     -p | --pp    : prototype pollution fuzzing" 1>&2; exit 1; 
 }
 
@@ -52,8 +52,8 @@ checkargs(){
           -s | --ssrf  )  ssrf="1";;
           -x | --xss   )  xss="1";;
           -n | --nuclei)  nuclei="1";;
-          -n | --cors  )  corse="1";;
-          -n | --pp    )  prototype="1";;
+          -c | --cors  )  cors="1";;
+          -p | --pp    )  prototype="1";;
       esac
       shift
   done

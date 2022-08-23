@@ -13,6 +13,8 @@ sudo ./smartrecon.sh -d domain.com <option>
     -s | --ssrf  : SSRF fuzzing	
     -x | --xss   : XSS fuzzing	  
     -n | --nuclei: Nuclei fuzzing	
+    -c | --cors  : Cors fuzzing	  
+    -p | --pp    : prototype pollution fuzzing	
 
 ```
 
