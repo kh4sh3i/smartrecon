@@ -132,7 +132,7 @@ permutatesubdomains(){
 dnsprobing(){
   echo "${green}Started dnsprobing with shuffledns for live host...${reset}"
   cat ./$domain/$foldername/$domain.txt | sort -u |  shuffledns -d $domain -silent -r ./$domain/$foldername/resolvers.txt -o ./$domain/$foldername/shuffledns.txt 
-  echo  "${yellow}Total of $(wc -l ./$domain/$foldername/shuffledns.txt | awk '{print $1}') live subdomains were found${reset}"
+  # echo  "${yellow}Total of $(wc -l ./$domain/$foldername/shuffledns.txt | awk '{print $1}') live subdomains were found${reset}"
 
 
   # echo "${green}Started Subdomain Bruteforcing with shuffledns...${reset}"
@@ -447,7 +447,7 @@ fi
     permutatesubdomains $domain
   fi
   dnsprobing $domain
-  subdomain_takeover $domain
+  # subdomain_takeover $domain
 	checkhttprobe $domain
   screenshots $domain
   getgau $domain
