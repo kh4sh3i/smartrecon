@@ -178,7 +178,7 @@ screenshots(){
 
 getgau(){
   echo "${green}fetch url from wayback,commoncrawl,otx,urlscan...${reset}"
-  cat ./$domain/$foldername/subdomain_live.txt | gau --blacklist jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,svg,eot  | qsreplace -a | tee ./$domain/$foldername/gau_output.txt
+  cat ./$domain/$foldername/subdomain_live.txt | gau -b jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,svg,eot  | qsreplace -a | tee ./$domain/$foldername/gau_output.txt
   echo "${green}gau done.${reset}"
 }
 
@@ -322,7 +322,7 @@ report()
     <tbody>' >> ./$domain/$foldername/html_report.html
 
 
-    cat ./$domain/$foldername/urllist.txt |  sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g'  | while read nline; do
+    cat ./$domain/$foldername/subdomain_live.txt |  sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g'  | while read nline; do
     # diresults=$(ls ~/tools/dirsearch/reports/$nline/ | grep -v old)
     echo "<tr>
     <td><a href='http://$nline'>$nline</a></td>
@@ -345,6 +345,8 @@ report()
     <tr><td><a href='./nuclei.txt'>nuclei scanner</a></td></tr>
     <tr><td><a href='./xss_result.txt'>Xss vuln</a></td></tr>
     <tr><td><a href='./listen_server.txt'>OOB SSRF vuln</a></td></tr>
+    <tr><td><a href='./cors_result.txt'>CORS vuln</a></td></tr>
+    <tr><td><a href='./prototype_pollution_result.txt'>Prototype Pollution vuln</a></td></tr>
     </tbody></table></div>" >> ./$domain/$foldername/html_report.html
 
 
