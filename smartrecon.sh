@@ -164,18 +164,18 @@ subdomain_takeover(){
   fi
   done
   sleep 1
-  cat ./$domain/$foldername/$domain.txt > ./$domain/$foldername/alldomains.txt
-  cat ./$domain/$foldername/cleantemp.txt | awk  '{print $1}' | while read line; do
-  x="$line"
-  echo "${x%?}" >> ./$domain/$foldername/alldomains.txt
-  done
-  sleep 1
+  # cat ./$domain/$foldername/$domain.txt > ./$domain/$foldername/alldomains.txt
+  # cat ./$domain/$foldername/cleantemp.txt | awk  '{print $1}' | while read line; do
+  # x="$line"
+  # echo "${x%?}" >> ./$domain/$foldername/alldomains.txt
+  # done
+  # sleep 1
 }
 
 
 checkhttprobe(){
   echo "${green}Web servers hunting [httpx] Domain probe testing...${reset}"
-  cat ./$domain/$foldername/alldomains.txt | sort -u | $HTTPXCALL -o ./$domain/$foldername/subdomain_live.txt
+  cat ./$domain/$foldername/$domain.txt | sort -u | $HTTPXCALL -o ./$domain/$foldername/subdomain_live.txt
 }
 
 
