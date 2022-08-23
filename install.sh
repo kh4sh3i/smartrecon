@@ -200,7 +200,7 @@ echo "done"
 
 
 
-echo "installing CorsMe"
+echo "installing ppmap"
 go install github.com/kleiton0x00/ppmap@latest
 echo "done"
 

@@ -82,6 +82,8 @@ today we can find below bug :
 * Broken authentication
 * cache poisoning
 * subdomain takeover
+* Cors 
+* prototype pollution
 
 
 ### Tips
@@ -96,9 +98,7 @@ for send notification you should config ($HOME/.config/notify/provider-config.ya
 If you want to contribute to a project and make it better, your help is very welcome. 
 
 ## product Roadmap
-* add CORS scanner
 * add open redirect scanner
-* add Prototype Pollution scanner
 * add sql injection scanner
 * increase performance
 
