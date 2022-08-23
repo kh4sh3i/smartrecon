@@ -135,9 +135,9 @@ dnsprobing(){
   echo  "${yellow}Total of $(wc -l ./$domain/$foldername/shuffledns.txt | awk '{print $1}') live subdomains were found${reset}"
 
 
-  echo "${green}Started Subdomain Bruteforcing with shuffledns...${reset}"
-  shuffledns  -d $domain -silent -list ./$domain/$foldername/dns_wordlist.txt  -r ./$domain/$foldername/resolvers.txt -o ./$domain/$foldername/sub_brute.txt
-  echo  "${yellow}Total of $(wc -l ./$domain/$foldername/sub_brute.txt | awk '{print $1}') live subdomains were found${reset}"
+  # echo "${green}Started Subdomain Bruteforcing with shuffledns...${reset}"
+  # shuffledns  -d $domain -silent -list ./$domain/$foldername/dns_wordlist.txt  -r ./$domain/$foldername/resolvers.txt -o ./$domain/$foldername/sub_brute.txt
+  # echo  "${yellow}Total of $(wc -l ./$domain/$foldername/sub_brute.txt | awk '{print $1}') live subdomains were found${reset}"
 }
 
 
