@@ -175,7 +175,7 @@ subdomain_takeover(){
 
 checkhttprobe(){
   echo "${green}Web servers hunting [httpx] Domain probe testing...${reset}"
-  cat ./$domain/$foldername/$domain.txt | sort -u | $HTTPXCALL -o ./$domain/$foldername/subdomain_live.txt
+  cat ./$domain/$foldername/$domain.txt | sort -u | httpx  -o ./$domain/$foldername/subdomain_live.txt
 }
 
 
