@@ -22,10 +22,12 @@ usage() {
   option:
     -a | --alt   : Additionally permutate subdomains	
     -b | --brute : Basic directory bruteforce
-    -f | --fuzz  : SSRF/XSS/Nuclei fuzzing	
+    -f | --fuzz  : SSRF/XSS/Nuclei/CORSE/prototype fuzzing	
     -s | --ssrf  : SSRF fuzzing	
     -x | --xss   : XSS fuzzing	  
-    -n | --nuclei: Nuclei fuzzing	" 1>&2; exit 1; 
+    -n | --nuclei: Nuclei fuzzing	
+    -c | --cors  : Nuclei fuzzing	
+    -p | --pp    : prototype pollution fuzzing" 1>&2; exit 1; 
 }
 
 
@@ -46,10 +48,12 @@ checkargs(){
       case $1 in
           -a | --alt   )  alt="1";;
           -b | --brute )  brute="1";;
-          -f | --fuzz  )  ssrf="1" xss="1" nuclei="1" ;;
+          -f | --fuzz  )  ssrf="1" xss="1" nuclei="1" corse="1" prototype="1" ;;
           -s | --ssrf  )  ssrf="1";;
           -x | --xss   )  xss="1";;
           -n | --nuclei)  nuclei="1";;
+          -n | --cors  )  corse="1";;
+          -n | --pp    )  prototype="1";;
       esac
       shift
   done
@@ -446,12 +450,12 @@ fi
   if [[ -n "$xss" ]]; then 
     XSS_Scanner $domain
   fi
-  # if [[ -n "$cors" ]]; then 
-  #   CORS_Scanner $domain
-  # fi
-  # if [[ -n "$prototype" ]]; then 
-  #   Prototype_Pollution_Scanner $domain
-  # fi
+  if [[ -n "$cors" ]]; then 
+    CORS_Scanner $domain
+  fi
+  if [[ -n "$prototype" ]]; then 
+    Prototype_Pollution_Scanner $domain
+  fi
 
 
   report $domain
