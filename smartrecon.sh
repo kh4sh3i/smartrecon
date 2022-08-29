@@ -85,6 +85,15 @@ downloader(){
 }
 
 
+oob_server(){
+  echo -e "${green}Starting up listen server...${reset}"
+  interactsh-client  -v &> ./$domain/$foldername/listen_server.txt & SERVER_PID=$!
+  sleep 5 # to properly start listen server
+  LISTENSERVER=$(tail -n 1 ./$domain/$foldername/listen_server.txt)
+  LISTENSERVER=$(echo $LISTENSERVER | cut -f2 -d ' ')
+  echo "Listen server is up $LISTENSERVER with PID=$SERVER_PID"
+}
+
 
 recon(){
   # public dataset search in project sonar (A rapid API for the Project Sonar dataset)
@@ -214,25 +223,43 @@ directory_bruteforce(){
 
 NucleiScanner(){
   echo -e "${green}Starting vuln scanner with nuclei...${reset}"
-  cat ./$domain/$foldername/subdomain_live.txt | nuclei -tags exposure,unauth,cache -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
+  # cat ./$domain/$foldername/subdomain_live.txt | nuclei -tags exposure,unauth,cache -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
+
+  nuclei -silent -iserver "https://$LISTENSERVER" \
+    -o ./$domain/$foldername/nuclei.txt \
+    -l ./$domain/$foldername/subdomain_live.txt \
+    -exclude-templates $HOME/nuclei-templates/misconfiguration/http-missing-security-headers.yaml \
+    -exclude-templates $HOME/nuclei-templates/miscellaneous/old-copyright.yaml \
+    -t $HOME/nuclei-templates/vulnerabilities/ \
+    -t $HOME/nuclei-templates/cnvd/ \
+    -t $HOME/nuclei-templates/iot/ \
+    -t $HOME/nuclei-templates/cves/2014/ \
+    -t $HOME/nuclei-templates/cves/2015/ \
+    -t $HOME/nuclei-templates/cves/2016/ \
+    -t $HOME/nuclei-templates/cves/2017/ \
+    -t $HOME/nuclei-templates/cves/2018/ \
+    -t $HOME/nuclei-templates/cves/2019/ \
+    -t $HOME/nuclei-templates/cves/2020/ \
+    -t $HOME/nuclei-templates/cves/2021/ \
+    -t $HOME/nuclei-templates/cves/2022/ \
+    -t $HOME/nuclei-templates/misconfiguration/ \
+    -t $HOME/nuclei-templates/network/ \
+    -t $HOME/nuclei-templates/miscellaneous/ \
+    -t $HOME/nuclei-templates/takeovers/ \
+    -t $HOME/nuclei-templates/default-logins/ \
+    -t $HOME/nuclei-templates/exposures/ \
+    -t $HOME/nuclei-templates/exposed-panels/ \
+    -t $HOME/nuclei-templates/fuzzing/
+
+  echo -e "${green}Finished nuclei scanner${reset}"
+  notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
 }
 
 
 SSRF_Scanner(){
-  echo -e "${green}Starting up listen server...${reset}"
-  interactsh-client  -v &> ./$domain/$foldername/listen_server.txt & SERVER_PID=$!
-  sleep 5 # to properly start listen server
-  LISTENSERVER=$(tail -n 1 ./$domain/$foldername/listen_server.txt)
-  LISTENSERVER=$(echo $LISTENSERVER | cut -f2 -d ' ')
-  echo "Listen server is up $LISTENSERVER with PID=$SERVER_PID"
-
-
   echo -e "${green}find SSRF vulnerability ...${reset}"
   cat ./$domain/$foldername/gau_output.txt | gf ssrf | qsreplace https://$LISTENSERVER | httpx -silent 
   notify -bulk -data ./$domain/$foldername/listen_server.txt -silent
-
-  # kill listen server
-  kill_listen_server
 }
 
 
@@ -441,6 +468,7 @@ fi
 
   cleantemp
   downloader
+  oob_server
   recon $domain
   searchcrtsh $domain
   if [[ -n "$alt" ]]; then 
@@ -476,7 +504,9 @@ fi
   echo "${green}Scan for $domain finished successfully${reset}" | notify -silent
   duration=$SECONDS
   echo "Scan completed in : $(($duration / 60)) minutes and $(($duration % 60)) seconds." | notify -silent
-  # cleantemp
+  cleantemp
+    # kill listen server
+  kill_listen_server
   echo "${green}server screanshots start ${reset}"
   cd ./$domain/$foldername/ &&  gowitness server -a $server_ip:30200
   stty sane
