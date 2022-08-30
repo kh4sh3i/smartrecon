@@ -1,4 +1,13 @@
-<img src="img/logo.png" style="width: 300px; display: block; margin: 0px auto;" />
+<h1 align="center">
+  <br>
+  <a href=""><img src="/img/logo.png" alt="" width="300px;"></a>
+  <br>
+  <img src="https://img.shields.io/badge/PRs-welcome-blue">
+  <img src="https://img.shields.io/github/last-commit/kh4sh3i/DevSecOps">
+  <img src="https://api.codacy.com/project/badge/Grade/e5fd334a431848dcb6ecdb3784fb5dfb">
+  <a href="https://twitter.com/intent/follow?screen_name=kh4sh3i_"><img src="https://img.shields.io/twitter/follow/kh4sh3i_?style=flat&logo=twitter"></a>
+  <a href="https://github.com/kh4sh3i"><img src="https://img.shields.io/github/stars/kh4sh3i?style=flat&logo=github"></a>
+</h1>
 
 # smartrecon
 smartrecon is a script written in Bash, it is intended to automate some tedious tasks of reconnaissance and information gathering
