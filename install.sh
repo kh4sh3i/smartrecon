@@ -65,7 +65,7 @@ go install  github.com/cgboal/sonarsearch/cmd/crobat@latest
 echo "done"
 
 
-echo "Installing assetfinder"
+echo "Installing subfinder"
 go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 echo "done"
 
