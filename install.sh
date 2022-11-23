@@ -1,7 +1,6 @@
 #!/bin/bash
 
 sudo apt-get -y update
-# sudo apt-get -y upgrade
 
 
 sudo apt-get install -y libcurl4-openssl-dev
@@ -103,21 +102,6 @@ echo "done"
 
 
 
-# echo "installing httprobe"
-# go install github.com/tomnomnom/httprobe@latest
-# echo "done"
-
-
-
-# echo "installing EyeWitness"
-# git clone https://github.com/FortyNorthSecurity/EyeWitness.git
-# cd EyeWitness/Python/setup/
-# sudo ./setup.sh
-# cd ~/tools/
-# echo "done"
-
-
-
 echo "installing gowitness"
 go install github.com/sensepost/gowitness@latest
 echo "done"
@@ -134,11 +118,6 @@ echo "installing httpx"
 go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 echo "done"
 
-
-# echo "installing smartrecon"
-# git clone https://github.com/kh4sh3i/smartrecon.git
-# cd ~/tools/
-# echo "done"
 
 
 echo "installing feroxbuster"
@@ -158,8 +137,6 @@ echo "done"
 
 
 echo "installing Gf-Patterns"
-# echo 'source $GOPATH/pkg/mod/github.com/tomnomnom/gf*/gf-completion.bash' >> ~/.bashrc
-# source ~/.bashrc 
 mkdir .gf
 sudo cp -r $GOPATH/pkg/mod/github.com/tomnomnom/gf*/examples/ ~/.gf
 git clone https://github.com/1ndianl33t/Gf-Patterns
@@ -204,11 +181,6 @@ echo "installing ppmap"
 go install github.com/kleiton0x00/ppmap@latest
 echo "done"
 
-
-
-# echo "installing deduplicate"
-# go install github.com/nytr0gen/deduplicate@latest
-# echo "done"
 
 
 echo "installing dalfox"
