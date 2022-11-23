@@ -96,7 +96,6 @@ oob_server(){
 
 
 recon(){
-  # public dataset search in project sonar (A rapid API for the Project Sonar dataset)
   echo -e "${green}1.Listing subdomains using crobat...${reset}"
   crobat -s $domain > ./$domain/$foldername/$domain.txt
 
@@ -105,23 +104,6 @@ recon(){
 
   echo -e "${green}3.Listing subdomains using assetfinder...${reset}"
   assetfinder -subs-only $domain >> ./$domain/$foldername/$domain.txt
-
-  # echo -e "${green}3.1.Listing subdomains using gau...${reset}"
-  # gau=`gau -subs $domain | cut -d / -f3 >> ./$domain/$foldername/$domain.txt`
-
-
-#  echo -e "5.excloude out of scope subdomain with hgnored.txt ..."
-#  grep=`grep -vf ignored.txt domains.txt > temp.txt`
-#  change=`mv temp.txt domains.txt`
-
-#  echo -e "5.1.vertical discovery subdomains with amass..."
-#  amass=`amass enum -d $domain -ip -src`
-
-#  echo -e "5.2.horizantal discovery subdomains with amass..."
-#  amass2=`amass intel -d $domain -whois`
-
-#  echo -e "5.3.get new subdomains with amass track..."
-#  amass3=`amass track -d $domain`
 }
 
 searchcrtsh(){
@@ -142,17 +124,11 @@ dnsprobing(){
   echo "${green}Started dnsprobing with shuffledns for live host...${reset}"
   cat ./$domain/$foldername/$domain.txt | sort -u |  shuffledns -d $domain -silent -r ./$domain/$foldername/resolvers.txt -o ./$domain/$foldername/shuffledns.txt 
   echo  "${yellow}Total of $(wc -l ./$domain/$foldername/shuffledns.txt | awk '{print $1}') live subdomains were found${reset}"
-
-
-  # echo "${green}Started Subdomain Bruteforcing with shuffledns...${reset}"
-  # shuffledns  -d $domain -silent -list ./$domain/$foldername/dns_wordlist.txt  -r ./$domain/$foldername/resolvers.txt -o ./$domain/$foldername/sub_brute.txt
-  # echo  "${yellow}Total of $(wc -l ./$domain/$foldername/sub_brute.txt | awk '{print $1}') live subdomains were found${reset}"
 }
 
 
 subdomain_takeover(){
   cat ./$domain/$foldername/shuffledns.txt >> ./$domain/$foldername/temp.txt
-  # cat ./$domain/$foldername/sub_brute.txt >> ./$domain/$foldername/temp.txt
   cat ./$domain/$foldername/crtsh.txt >> ./$domain/$foldername/temp.txt
 
 
@@ -211,8 +187,6 @@ get_interesting(){
 
 directory_bruteforce(){
   echo -e "${green}Starting directory bruteforce with FFUF...${reset}"
-  # cat ./$domain/$foldername/subdomain_live.txt | $feroxbuster --stdin --silent -s 200 -n -w $dirsearchWordlist -o ./$domain/$foldername/directory.txt
-  
   for sub in $(cat ./$domain/$foldername/subdomain_live.txt);
     do  
     echo "${yellow} $sub ${reset}"
@@ -223,8 +197,6 @@ directory_bruteforce(){
 
 NucleiScanner(){
   echo -e "${green}Starting vuln scanner with nuclei...${reset}"
-  # cat ./$domain/$foldername/subdomain_live.txt | nuclei -tags exposure,unauth,cache -o ./$domain/$foldername/nuclei.txt -silent; notify -bulk -data ./$domain/$foldername/nuclei.txt -silent
-
   nuclei -silent -iserver "https://$LISTENSERVER" \
     -o ./$domain/$foldername/nuclei.txt \
     -l ./$domain/$foldername/subdomain_live.txt \
@@ -265,7 +237,6 @@ SSRF_Scanner(){
 
 XSS_Scanner(){
   echo -e "${green}find Xss vulnerability ...${reset}"
-  # python3 $paramspider -d $domain -s TRUE -e jpg,jpeg,gif,css,js,tif,tiff,png,ttf,woff,woff2,ico,pdf,svg,txt,eot -q -o ./$domain/$foldername/xss_result.txt 
   cat ./$domain/$foldername/gau_output.txt | gf xss | qsreplace  -a | httpx -silent -threads 500 -mc 200 |  dalfox pipe -S | tee ./$domain/$foldername/xss_raw_result.txt
   cat ./$domain/$foldername/xss_raw_result.txt | cut -d ' ' -f2 | tee ./$domain/$foldername/xss_result.txt; notify -bulk -data ./$domain/$foldername/xss_result.txt -silent
 }
@@ -273,7 +244,6 @@ XSS_Scanner(){
 
 CORS_Scanner(){
   echo -e "${green}find CORS vulnerability ...${reset}"
-  # echo https://google.com | hakrawler -u | httpx -silent | CorsMe 
   cat ./$domain/$foldername/gau_output.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 | CorsMe - t 70 -output ./$domain/$foldername/cors_result.txt
 }
 
@@ -282,19 +252,6 @@ Prototype_Pollution_Scanner(){
   echo -e "${green}find Prototype Pollution vulnerability ...${reset}"
   cat ./$domain/$foldername/gau_output.txt | qsreplace  -a | httpx -silent -threads 500 -mc 200 | ppmap | tee ./$domain/$foldername/prototype_pollution_result.txt
 }
-
-
-
-# echo -e "${green}find sql injection with wayback ...${reset}"
-# python3 paramspider.py -d $domain -s TRUE -e woff,ttf,eot,css,js,png,svg,jpg | deduplicate --sort | httpx -silent | sqlmap
-
-
-
-
-# echo -e "${green}find open redirect vulnerability ...${reset}"
-# cat ./$domain/$foldername/gau_output.txt | gf redirect | qsreplace  -a | httpx -silent |  while read domain; do python3 oralyzer.py -u $domain; done 
-
-
 
 
 kill_listen_server(){
@@ -360,7 +317,6 @@ report()
 
 
     cat ./$domain/$foldername/subdomain_live.txt |  sed 's/\http\:\/\///g' |  sed 's/\https\:\/\///g'  | while read nline; do
-    # diresults=$(ls ~/tools/dirsearch/reports/$nline/ | grep -v old)
     echo "<tr>
     <td><a href='http://$nline'>$nline</a></td>
     <td><a href='./reports/$nline.txt'>$(cat ./$domain/$foldername/reports/$nline.txt | wc -l)</a></td>
@@ -436,7 +392,6 @@ if [ -z "${domain}" ]; then
 domain=${subreport[1]}
 foldername=${subreport[2]}
 subd=${subreport[3]}
-# report $domain $subdomain $foldername $subd; exit 1;
 fi
   clear
   logo
